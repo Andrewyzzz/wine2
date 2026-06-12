@@ -1,0 +1,111 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,booktabs}
+\usepackage[hidelinks]{hyperref}
+
+\title{Supplementary Material:\\
+Deployment Calibration Trace for\\
+\emph{The Price of Fairness, Complexity, and Incentives in
+No-Numeraire Combinatorial Trade-Intent Auctions}}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\noindent
+This anonymized supplement provides the deployment summary statistics used
+in Section~7 of the submission, so that the reported figures can be
+verified without de-anonymizing the authors. The underlying per-auction
+records and the reproduction scripts are included in the accompanying
+archive. We reiterate the scope stated in the main text: these are
+\textbf{observable deployment diagnostics, not estimates of the structural
+complementarity factor $g$}. The trace records winner and runner-up
+solution scores and order-level notionals, but not the full vector of
+per-leg standalone valuations required to compute $V(S)/\sum_j V(\{j\})$;
+the worst-case results of the submission hold for any $g$.
+
+\section*{S1. Trace scale}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lr@{}}
+\toprule
+Quantity & Value \\
+\midrule
+Post-adoption solver competitions & $802{,}816$ \\
+Observation window & 8 months \\
+Covered notional & \$54.69\,B \\
+Visible accounting gap (aggregate) & \$5.13\,M \\
+Visible accounting gap (relative) & $\approx 0.94$ bps \\
+\bottomrule
+\end{tabular}
+\caption{Scale of the deployment trace. The visible accounting gap is the
+aggregate difference between the winning solution's score and the best
+non-winning visible score.}
+\end{table}
+
+\section*{S2. Visible coverage / spread distribution}
+
+For each auction, let $\mathrm{Score}_1$ be the winning solution's score
+and $\mathrm{Score}^{\mathrm{other}}_2$ the best positive score submitted
+by a different solver. Define the observable
+\[
+\widehat\alpha^{\mathrm{obs}}
+=\frac{\mathrm{Score}^{\mathrm{other}}_2}{\mathrm{Score}_1}\in(0,1],
+\qquad
+\widehat G^{\mathrm{obs}}=1/\widehat\alpha^{\mathrm{obs}}\ge1 .
+\]
+This is an \emph{auction-level} visible coverage; it is a proxy for, and
+weaker than, the per-leg coverage parameter of the submission's
+coverage law, which would require per-leg standalone benchmarks.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lr@{}}
+\toprule
+Event & Share of auctions \\
+\midrule
+Visible spread $\widehat G^{\mathrm{obs}}>2$ (all orders) & $25.3\%$ \\
+Visible spread $\widehat G^{\mathrm{obs}}>4$ (all orders) & $20.2\%$ \\
+Visible spread $\widehat G^{\mathrm{obs}}>2$ (small-notional orders) & $63.1\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Tail of the visible-spread distribution. A non-trivial spread is
+the common case rather than a corner, especially for small orders.}
+\end{table}
+
+\section*{S3. Benchmark robustness}
+
+Under a naive local hard-reserve benchmark (reserve computed from a short
+local window with no inheritance or smoothing), we replay a single
+low-quote injection per cell-window and record whether it would move the
+published benchmark enough to admit an otherwise-filtered settlement.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{@{}lr@{}}
+\toprule
+Benchmark variant & Vulnerable cell-windows (auction-weighted) \\
+\midrule
+Local hard reserve (naive) & $97.1\%$ \\
+\bottomrule
+\end{tabular}
+\caption{Fragility of a naive benchmark to single-injection contamination,
+motivating the delayed / quantile / rate-limited / parent-cell-inherited
+benchmarks analyzed in the submission's contamination game. The replay
+parameters and robust-reserve configuration are in the accompanying
+scripts.}
+\end{table}
+
+\section*{S4. Reproduction}
+
+The accompanying archive contains: (i) the processed per-auction records
+underlying Tables~S1--S3; (ii) the scripts that compute the visible
+coverage distribution and the accounting gap; and (iii) the
+shadow-reserve replay used for the robustness diagnostic, with its
+configuration file. All identifying metadata (author, affiliation,
+project, and protocol-internal identifiers beyond what is needed to
+interpret the tables) has been removed.
+
+\end{document}

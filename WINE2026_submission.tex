@@ -156,6 +156,9 @@ NP-hard but fixed-parameter tractable in the number of directed asset
 pairs. Several results expose a recurring phenomenon---the no-numeraire
 constraint \emph{removes deviations}---and a single geometric hard family
 that governs both informational and incentive prices.
+Section~\ref{sec:empirics} calibrates the spread against a deployment
+trace, showing it is observable and economically large; the worst-case
+theory is independent of those measurements.
 Table~\ref{tab:summary} collects the quantitative results.
 
 \begin{table}[t]
@@ -511,6 +514,52 @@ $g\mapsto g/(1-\mu)$.
 Detection only tempers intensity; deterrence is the cost floor's job.
 The slogan: fees deter, detection tempers, rate limits tax ramping but
 do not remove persistent bias.
+
+\section{Empirical Calibration from Deployment Data}\label{sec:empirics}
+
+\paragraph{Scale.}
+An anonymized supplementary deployment trace contains 802,816
+post-adoption solver competitions over eight months. On the
+USD-covered sane-volume subsample, the trace reports \$54.69B of
+covered notional and a \$5.13M visible accounting gap, about 0.94 bps.
+These scale numbers are not used to prove any theorem; they explain why
+the benchmark and spread parameters are operational rather than merely
+formal.
+
+\paragraph{Visible coverage and spread.}
+For an auction $a$, let $Score_{1,a}$ be the winning solution score and
+let $Score^{\mathrm{other}}_{2,a}$ be the best positive score submitted
+by a different solver. We calibrate the auction-level observable
+\[
+  \widehat\alpha^{\mathrm{obs}}_a
+  = \frac{Score^{\mathrm{other}}_{2,a}}{Score_{1,a}},
+  \qquad
+  \widehat G^{\mathrm{obs}}_a
+  = \frac{1}{\widehat\alpha^{\mathrm{obs}}_a}.
+\]
+This is a visible benchmark-coverage diagnostic, not the per-leg
+coverage parameter in Theorem~\ref{thm:coverage}; it uses only the
+winner and best non-winning solver scores observable in the trace.
+Likewise, $\widehat G^{\mathrm{obs}}$ is a visible spread, not the
+structural complementarity factor. The trace reports
+$\widehat G^{\mathrm{obs}}>2$ in 25.3\% of auctions and
+$\widehat G^{\mathrm{obs}}>4$ in 20.2\%; among small-notional auctions,
+the share with $\widehat G^{\mathrm{obs}}>2$ is 63.1\%. Thus the spread
+phenomenon is not confined to worst-case constructions.
+
+\paragraph{Benchmark robustness.}
+The same trace also motivates the contamination model. Under a naive
+local hard-reserve benchmark, 97.1\% of auction-weighted cell-windows
+are vulnerable in the supplementary diagnostic. We use this number only
+as a design signal: local benchmarks should be delayed, quantile-based,
+rate-limited, and inherited from coarser parent cells when local support
+is thin. The theoretical parameters in the contamination game remain
+model primitives; the deployment trace is not used to estimate their
+numeric values.
+
+\textbf{These are observable deployment diagnostics, not estimates of
+the structural complementarity factor $g$; the theory's worst-case
+bounds hold for whatever $g$ a deployment exhibits.}
 
 \section{Conclusion}\label{sec:conclusion}
 
