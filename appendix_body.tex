@@ -1,0 +1,256 @@
+\section{Full Proofs for Section~\ref{sec:pof}}
+
+\begin{proof}[Proof of Theorem~\ref{thm:pof}]
+\emph{Upper bound.} Fix an unconstrained optimum and process its winning
+bids independently; bids cover disjoint order sets, so the repaired
+welfares add. Take a winning bid with floor mass $C_S=\sum_{j\in S}c_j>0$
+(a bid with $C_S=0$ has all floors zero and is already fair), value
+$V=\sum_{j\in S}v_j$, gain $\gamma=V/C_S\in[1,g]$, and deficit
+$D=\sum_{j\in S}(c_j-v_j)^+$. Two fair uses:
+
+\emph{Repair.} Move value from over-served legs to starved ones. The
+total surplus available is $s=V-(C_S-D)=V-C_S+D$, and clearing the
+deficit costs $D/\theta$ units of surplus (haircut $\lambda=1-\theta$).
+This is feasible iff $V-C_S\ge D\frac{1-\theta}{\theta}$, and then the
+delivered welfare is $f=V-D\frac{1-\theta}{\theta}$. Since $D\le C_S$ and
+$V-C_S=(\gamma-1)C_S$, feasibility holds whenever
+$\gamma-1\ge\frac{1-\theta}{\theta}$, i.e. $\gamma\ge1/\theta$; then
+$f\ge V-C_S\frac{1-\theta}{\theta}=V\big(1-\frac{\gamma-1+\ldots}{}\big)$,
+and a direct computation gives $f\ge V/\!\min(g,1/\theta)$ in the regime
+$\gamma\ge\min(g,1/\theta)$.
+
+\emph{Drop.} Settle every covered order at its floor: $f=C_S=V/\gamma$.
+For $\gamma\le\min(g,1/\theta)$ this is $\ge V/\!\min(g,1/\theta)$.
+
+Either way each bid retains a $1/\min(g,1/\theta)$ fraction of its value;
+summing, $\FAIR\ge\OPT/\min(g,1/\theta)$.
+
+\emph{Lower bound.} Let $\gamma^\ast=\min(g,1/\theta)$. Two orders on
+distinct pairs, $c_1=0$, $c_2=c$; one batched bid with
+$v_2=0$, $v_1=\gamma^\ast c$, so $V=\gamma^\ast c$, $C_S=c$, and the
+batching solver's standalone values are $0,c$, so
+Definition~\ref{def:g} holds as $\gamma^\ast\le g$. Repairing order $2$
+to its floor $c$ requires withdrawing $c/\theta$ from $v_1$; if
+$\gamma^\ast=1/\theta$ this exhausts $v_1$ exactly (welfare $c$), and if
+$\gamma^\ast=g<1/\theta$ the batch is irreparable (welfare $c$ from the
+individual allocation). In both cases $\FAIR=c$ and
+$\OPT=\gamma^\ast c$, so $\OPT/\FAIR=\gamma^\ast$. Independence of the
+number of orders and of prices is immediate from the construction.\qed
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:dirrel}]
+The two-order family of Theorem~\ref{thm:pof} already has $d=2$ and
+attains $\min(g,1/\theta)$, and the upper bound never uses $d$; for
+$d=1$ only singletons exist, so $\OPT=\FAIR=C$.\qed
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:coverage}]
+\emph{Upper bound.} As above, coverage caps the deficit by
+$D\le(1-\alpha)C_S$. Repair is feasible when
+$\gamma-1\ge(1-\alpha)\frac{1-\theta}{\theta}=\Gamma-1$, and then
+$f=V-\frac{D(1-\theta)}{\theta}\ge V\big(1-\frac{(1-\alpha)(1-\theta)}
+{\theta\gamma}\big)\ge V/\Gamma$ for $\gamma\ge\Gamma$ (monotone in
+$\gamma$, equality at $\gamma=\Gamma$); dropping gives $V/\gamma\ge
+V/\Gamma$ for $\gamma\le\Gamma$ and $V/g$ for $\gamma\le g$. Hence
+$\FAIR\ge\OPT/\min(g,\Gamma)$. \emph{Lower bound.} Two orders, $c_1=0$,
+$c_2=c$; batched bid with $v_2=\alpha c$ (coverage saturated) and
+$v_1=(\gamma^\ast-\alpha)c$, $\gamma^\ast=\min(g,\Gamma)$. Repairing
+order $2$ needs $(1-\alpha)c/\theta$ from $v_1$; if $\gamma^\ast=\Gamma$
+then $v_1=(\Gamma-\alpha)c=\frac{(1-\alpha)c}{\theta}$ exactly, and if
+$\gamma^\ast=g<\Gamma$ the batch is irreparable. Either way $\FAIR=c$,
+$\OPT=\gamma^\ast c$.\qed
+\end{proof}
+
+\section{Full Proofs for Section~\ref{sec:walras}}
+
+\begin{proof}[Proof of Lemma~\ref{lem:domination}]
+$\sum_{j\in S}(v_j-w_j)=V_i(S)-\sum_{j\in S}w_j\le
+\sum_{j\in S}V_i(\{j\})-\sum_{j\in S}w_j\le
+\sum_{j\in S}(V_i(\{j\})-w_j)^+$, the middle step by $g=1$. Each
+positive-profit singleton has $V_i(\{j\})>w_j$, hence is executable; a
+non-executable batch is not a deviation. The obligation $w_j$ is the same
+whether $j$ is served in the batch or individually, which is the only
+property of UDP used.\qed
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{prop:walras}]
+\emph{$(a)$, $g=1$.} Set $w_j=c_j$ and assign each order $j$ to a solver
+attaining $V_i(\{j\})=c_j$. The winner earns zero margin per order; any
+losing singleton has $V_i(\{j\})-c_j\le0$; and
+Lemma~\ref{lem:domination} kills batch deviations (no positive-profit
+singletons). With $g=1$, any allocation produces at most
+$\sum_{(i,S)}V_i(S)\le\sum_j c_j=C$, attained here, so produced value is
+$C=\OPT$, all delivered. The point $w_j=c_j$ is the best-bid floor, so
+the equilibrium is fair (the trader-optimal core point of the underlying
+assignment market~\cite{shapley1971}, to which
+Lemma~\ref{lem:domination} reduces the economy).
+
+\emph{$(b)$, $g>1$.} We argue natively; non-existence with transfers does
+not transfer, as feasibility only removes deviations. Fix
+$\delta\in(0,2(g-1)]$; orders $1,2,3$ on distinct pairs, a rival with
+standalone value $1$ on each ($c_j=1$), and three solvers each holding
+one batched bid on a pair $\{j,j'\}$ with vector
+$(1+\tfrac\delta2,1+\tfrac\delta2)$ (value $2+\delta\le2g$) and
+standalone values $1$. The efficient allocation runs one batch, say
+$\{1,2\}$, plus order $3$ individually (produced $3+\delta$). Suppose
+rates $w$ support it. Order $3$ is served by a standalone solver of value
+$1$, so $w_3\le1$; orders $1,2$ are served by the batch, so
+$w_1,w_2\le1+\tfrac\delta2$. The batch $\{2,3\}$ is then executable, and
+equilibrium requires it unprofitable against its solver's individual
+alternatives: $(2+\delta)-w_2-w_3\le(1-w_2)^++(1-w_3)^+$. If $w_2\le1$
+the right side is $(1-w_2)+(1-w_3)$, giving $\delta\le0$; if $w_2>1$ it
+is $1-w_3$, giving $w_2\ge1+\delta>1+\tfrac\delta2$, contradicting
+feasibility. No supporting rates exist.\qed
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:core}]
+(i) If $w_j<c_j$, the standalone bid attaining $c_j$ blocks $j$ at factor
+$1$; if $w_j\ge c_j$ for all $j$, no singleton strictly improves. (ii)
+Blocking $w_j=c_j$ at factor $g$ needs delivery $>g\,c_j$ to every
+$j\in S$, totalling $>g\,C_S$, while any feasible delivery from a bid
+totals $\le V_i(S)\le g\,C_S$ (haircuts only lose value; if all floors in
+$S$ are zero then $V_i(S)=0$ and strict blocking is impossible).
+Tightness: a batch with vector $(g'c,g'c)$ over floors $(c,c)$,
+$g'\in(\kappa,g]$, blocks at any $\kappa<g$. (iii) Three-cycle floors
+$(1,1,1)$, pair vectors $(1+\tfrac\delta2,1+\tfrac\delta2)$: summing the
+three transferable core constraints $x_j+x_{j'}\ge2+\delta$ gives
+$\sum x_j\ge3+\tfrac{3\delta}2>3+\delta=\OPT$, so the transferable core is
+empty; the allocation (batch $\{1,2\}$, order $3$ individually) is
+$\theta=0$-unblocked since every other batch caps a covered order at a
+value already attained.\qed
+\end{proof}
+
+\paragraph{Complexity (sketch).}
+NP-hardness is a reduction from 3-dimensional matching: orders are
+ground elements, batched bids are triples of value $1$, and a fair
+welfare-$n$ allocation exists iff a perfect matching does. For
+fixed-parameter tractability, UDP forces all orders on a directed pair
+into one winning bid, so a solution is a choice of one bid per pair;
+enumerating over $2^{O(P)}$ pair-assignments and solving each in
+polynomial time gives $2^{O(P)}\cdot\mathrm{poly}$.
+
+\section{Full Proofs for Section~\ref{sec:incentives}}
+
+\begin{proof}[Proof of Theorem~\ref{thm:posp} (sketch)]
+\emph{Lower bound.} Restrict to the screening core $R_g$: a single
+strategic solver with a batch type and public fallback floors. Downward
+incentive compatibility forces the interim utility $u$ to be
+nondecreasing, hence $u'(V)\ge p(V)$ almost everywhere (a one-sided
+envelope inequality---two-sided Myerson fails because binding bids
+misreport only downward). Integrating $u'\ge p$ against the kernel
+$V^{-2}$ and applying Fubini yields expected welfare loss
+$\ge\frac{g\ln g}{2(g-1)}\ge\frac{\ln g}2$ for every randomized DSIC
+mechanism. \emph{Upper bounds.} A geometric posted-price ladder achieves
+$e(\lceil\ln g\rceil+1)$; the optimal deterministic mechanism is exactly
+$\sqrt g$ by a balanced two-threshold argument. Since $R_g$ embeds in the
+full model, the lower bound holds there too.\qed
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:lift} (sketch)]
+(i) The eligibility-posted packing mechanism posts, from public data, an
+eligibility threshold and packing weight $C_S e^{k}$ per option for a
+random $k$; it is universally truthful (no reports enter the posted
+quantities) and a $\max(X/a,Y)\ge(X+Y)/(a+1)$ combination gives
+$\E[W]\ge\FAIR/(e(\lceil\ln g\rceil+1)+1)$. (ii) Post every option at
+price $C_S\,t$, $t=e^k$, $k\sim\mathrm{Unif}\{0,\dots,K\}$; the solver
+demands a profit-maximizing disjoint collection. Truthfulness is in the
+posted-demand sense. Let $p(t)=\max_{\mathcal C}\sum_{S\in\mathcal
+C}(V_S-C_St)$ over disjoint collections: it is convex, piecewise linear,
+nonincreasing, and $0$ for $t\ge g$; at differentiability
+$-p'(t)=\sum_{S\in\mathcal C^\ast(t)}C_S$, so delivered mass is
+$D(t)=t(-p'(t))$. On $[e^k,e^{k+1}]$, $\int -p'\le(e-1)D(e^k)$;
+telescoping, $p(1)\le(e-1)\sum_kD(e^k)$, whence
+$\E[D]\ge p(1)/((e-1)(K+1))$, and combining with $W\ge C$ gives
+$\Theta(1+\log g)$. For the separation, $m$ options sharing one order
+under independent geometric prices let a multi-minded solver cherry-pick
+the cheapest, losing $\Omega(g/\log^2 g)$.\qed
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:multi} (sketch)]
+\emph{Upper bound.} In random-priority coupled menus, condition on a
+solver being served first (probability $1/N$): it faces the full
+coupled menu and the profit-curve telescope of Theorem~\ref{thm:lift}
+applies, while later positions contribute nonnegatively; since each
+solver's optimal batches form a disjoint collection,
+$\sum_i p_i(1)\ge\sum_{b}V_b-C_{B^\ast}$, and the bound follows.
+Truthfulness holds because a solver's menu depends only on predecessors'
+demands. \emph{Lower bound.} Symmetrized swarm: $N$ identities, each with
+public family $\{\{o_i\},G\}$ ($G$ all orders), differing only privately;
+the batcher (placed at an adversarial identity after seeing the
+mechanism) has $V(G)=\rho C_G$, while blockers have a profitable
+$\rho$-singleton. Choose $\rho\in(\max\{1,g/2\},g]$ off all multiplier
+atoms. A blocker is silent iff $t>\rho$; the telescoping identity
+$\sum_i(1-q_i)\prod_{s\prec i}q_s=1-\prod q_s\le1$ yields an identity
+$i^\ast$ with $(1-q_{i^\ast})\Pr[\text{predecessors silent}]\le1/N$, and
+placing the batcher there caps its expected delivery at $2\rho L/N$,
+giving ratio $\Omega(\min(N,g))$.\qed
+\end{proof}
+
+\section{Full Proofs for Section~\ref{sec:online}}
+
+\begin{proof}[Proof of Proposition~\ref{prop:online}]
+Settle-at-deadline is fair and achieves $C$ on every instance, while
+$\FAIR\le\OPT\le gC$, so the ratio is at most $g$; a staggered-deadline
+instance forcing individual-only settlement shows it is at least $g$.\qed
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:online}]
+(i) If an almost-surely fair mechanism settles an exposed batch (a
+covered order's deadline in the future) with positive probability on some
+prefix, fix that prefix and append a higher standalone bid on a
+later-deadline covered order: on the appended instance it has, with
+positive probability, settled below a realized floor---not a.s.\ fair.
+Hence exposed batches are never settled, and on the staggered hard family
+the mechanism is individual-only a.s., with welfare $\le C$ against
+$\FAIR=gC$.
+(ii) Stopped welfare $q=V+C-C_S$ satisfies $q\in[C,gC]$ ($V\ge C_S$ and
+$V\le gC_S$, $C_S\le C$). \emph{Deterministic} $\Theta(\sqrt g)$: accept
+the first $q\ge\sqrt g\,C$; if $q^\ast\ge\sqrt g\,C$ the ratio is
+$q^\ast/q\le\sqrt g$, else $W=C$ and ratio $<\sqrt g$; a two-step
+adversary matches. \emph{Randomized} $O(\log g)$: with
+$k\sim\mathrm{Unif}\{0,\dots,K\}$, accept the first $q\ge e^kC$. With
+probability $1/(K+1)$, $e^kC\le q^\ast<e^{k+1}C$, and then the mechanism
+accepts some offer with $q\ge e^kC>q^\ast/e$, so
+$\E[W]\ge q^\ast/(e(K+1))$. The matching $\Omega(\log g)$ is a Yao bound:
+a persistent order with fleeting geometric batch offers $x_i=e^ic$,
+$i\le\lfloor\ln g\rfloor$, shown for the first $M$ with
+$\Pr[M\ge i]=e^{-i}$, caps every deterministic threshold at $2c$ while
+$\E[\FAIR]=\Omega(c\log g)$. Greedy: a ratio-$g$ blocker arriving before a
+ratio-$g$ batch is accepted (killing the batch) for any threshold
+$T\le g$ and rejected with the batch for $T>g$, ratio $\Omega(g)$.\qed
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:poa} (sketch)]
+In the per-order-decomposable individual game, the maximal standing bid
+on $j$ both wins and delivers itself, so $c_j(b)=p_j(b)$. Let
+$i^\ast(j)$ deviate to $W_j$ with density $1/(v^{\max}_j-w)$ on
+$[0,(1-1/e)v^{\max}_j]$ (Syrgkanis--Tardos). Then the expected utility
+from $j$ is $((1-\tfrac1e)v^{\max}_j-\beta_j)^+\ge(1-\tfrac1e)
+v^{\max}_j-p_j(b)$ with $\beta_j\le c_j(b)=p_j(b)$, the penalty landing
+under $b$. Summing and using
+$\sum_iu_i(b)=\PW(b)-\sum_jp_j(b)$ in the CCE inequality cancels the
+price terms, giving $\E[\PW]\ge(1-1/e)\OPT_{\mathrm{ind}}$; against the
+unrestricted optimum, $\OPT\le g\,\OPT_{\mathrm{ind}}$. The pure-NE lower
+bound is Theorem~\ref{thm:pof}'s instance with a filtered $(2gv,0)$
+batch. The full-game obstruction is a latent batch present in $b_{-i}$
+that executes under the deviation but not under $b$, breaking every
+charging scheme.\qed
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:contam} (sketch)]
+The constant-policy per-round profit is
+$\pi(a)=v\beta a-\kappa_1a-\tfrac{\kappa_2}2a^2$ (the rate limit does not
+bind in steady state). With $\kappa_2>0$: if $v\beta\le\kappa_1$ then
+$\pi'(0)\le0$ and $\pi$ is concave, so $a^\ast=0$; else
+$a^\ast=\min\{\bar a,(v\beta-\kappa_1)/\kappa_2\}$. The dynamics give
+$b_t\ge b^\ast-\beta a_t$ pointwise, so every horizon-$T$ payoff is
+$\le\sum_t[v\beta a_t-K(a_t)]\le T\pi(a^\ast)$; the constant attack
+attains this after the ramp. Reaching bias $\mu$ needs
+$\ge\ln\frac1{1-\mu}/\ln\frac1{1-r}$ rounds, during which the benefit is
+below steady state; with instant recovery any pause restarts the ramp,
+so the exact net loss per restart is
+$\sum_{t=1}^{T_\mu}[\pi(a^\ast)-\pi(\Delta_t/\beta)]\approx
+\pi(a^\ast)\mu/(3r)$. Floors scale by $1-\mu$, so a guarantee in the
+public-floor spread $G$ becomes $G/(1-\mu)$; the coverage law calibrates
+jointly, $(g,\alpha)\mapsto(g/(1-\mu),\min\{1,\alpha/(1-\mu)\})$.\qed
+\end{proof}
