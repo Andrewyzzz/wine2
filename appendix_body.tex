@@ -216,12 +216,13 @@ $\E[\text{welfare}]\ge\max\big(V/(e(K+1)),1\big)\ge\FAIR/(e(\lceil\ln
 g\rceil+1))$.
 
 \emph{Deterministic optimum.} A single deterministic threshold $\tau$
-executes iff $V\ge\tau$, giving welfare $\min(V,\ \tau\ \text{or}\ 1)$;
-the worst case over $V\in[1,g]$ is balanced at $\tau=\sqrt g$, where both
-the "execute'' branch ($V/\tau$ at $V=g$) and the "floor'' branch
-($\tau/1$ at $V=\tau^-$) equal $\sqrt g$, and no deterministic rule does
-better. Since $R_g$ embeds as a degenerate single-minded subfamily of the
-full model, all three bounds transfer.\hfill$\square$
+executes iff $V\ge\tau$: welfare is $V$ on executed types and the floor
+welfare $1$ otherwise. The worst case over $V\in[1,g]$ is therefore
+balanced at $\tau=\sqrt g$, where the high-type loss $g/\tau$ and the
+floor loss $\tau/1$ (just below threshold) both equal $\sqrt g$, and no
+deterministic rule does better. Since $R_g$ embeds as a degenerate
+single-minded subfamily of the full model, all three bounds
+transfer.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:lift}]
@@ -290,9 +291,11 @@ $\E[W]\ge\FAIR/(N(e-1)(\lceil\ln g\rceil+1)+1)$. Truthfulness holds
 because a solver's menu depends only on which orders predecessors have
 consumed, never on its own report.
 
-\emph{Lower bound (symmetrized swarm).} Fix $N$ identities, each with the
-\emph{same} public option family $\{\{o_i\},G\}$, where $G$ is the set of
-all orders; identities differ only in private values, so any
+\emph{Lower bound (symmetrized swarm).} Fix orders $o_1,\dots,o_N$ with
+floors $\varepsilon=L/(N\rho)$ and auxiliary orders $u_1,\dots,u_L$ with
+floor $1$; let $G$ be the set of all orders, so $C_G\le2L$. Each identity
+has the \emph{same} public option family $\{\{o_i\},G\}$; identities
+differ only in private values, so any
 report-independent service order is statistically independent of which
 identity is the ``batcher.'' Choose $\rho\in(\max\{1,g/2\},g]$ avoiding
 the (countably many) atoms of the $N$ multiplier distributions. The
@@ -302,7 +305,10 @@ identity (a blocker) has a ratio-$\rho$ singleton on its own order and a
 ratio-$1$ copy of $G$. At multiplier $t$ a blocker is silent iff $t>\rho$;
 write $q_i=\Pr[t_i>\rho]$. The batcher delivers $\Theta(\rho C_G)$ only if
 it is reached before any blocker has consumed an order of $G$, i.e. only
-if all predecessors are silent. For any realization of the order,
+if all predecessors are silent. Blockers together deliver at most
+$N\varepsilon\rho=L$, and fallback floors contribute at most $C_G\le2L$,
+so pointwise $W\le\mathrm{del}_{\mathrm{batcher}}+3L$. For any
+realization of the order,
 \[
 \sum_{i}(1-q_i)\!\!\prod_{s\prec i}\!q_s \;=\; 1-\prod_s q_s \;\le\; 1,
 \]
@@ -314,11 +320,14 @@ multipliers,
 \]
 so some identity $i^\ast$ has
 $(1-q_{i^\ast})\Pr[\text{predecessors silent}]\le 1/N$. Placing the
-batcher at $i^\ast$ caps its expected delivery at $\rho C_G/N$, while the
-fair optimum delivers $\Theta(\rho C_G)$ via the batch; the ratio is
-$\Omega(\min(N,g))$ (using $\rho>g/2$). The blockers' geometry is public
-and identical across placements, so the bound holds even for
-geometry-aware orders.\hfill$\square$
+batcher at $i^\ast$ caps its expected batch delivery at $2\rho L/N$,
+while the fair optimum delivers at least $\rho L$ via the batch. Hence
+\[
+\frac{\FAIR}{\E[W]}\ge\frac{\rho}{3+2\rho/N}
+=\Omega(\min(N,\rho))=\Omega(\min(N,g)),
+\]
+using $\rho>g/2$. The blockers' geometry is public and identical across
+placements, so the bound holds even for geometry-aware orders.\hfill$\square$
 \end{proof}
 
 \section{Full Proofs for Section~\ref{sec:online}}
@@ -365,7 +374,8 @@ v^{\max}_j-p_j(b)$ with $\beta_j\le c_j(b)=p_j(b)$, the penalty landing
 under $b$. Summing and using
 $\sum_iu_i(b)=\PW(b)-\sum_jp_j(b)$ in the CCE inequality cancels the
 price terms, giving $\E[\PW]\ge(1-1/e)\OPT_{\mathrm{ind}}$; against the
-unrestricted optimum, $\OPT\le g\,\OPT_{\mathrm{ind}}$. The pure-NE lower
+unrestricted optimum, $\OPT\le g\,\OPT_{\mathrm{ind}}$, so the factor is
+at most $(e/(e-1))g$. The pure-NE lower
 bound is Theorem~\ref{thm:pof}'s instance with a filtered $(2gv,0)$
 batch. The full-game obstruction is a latent batch present in $b_{-i}$
 that executes under the deviation but not under $b$, breaking every
