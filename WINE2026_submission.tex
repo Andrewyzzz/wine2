@@ -53,8 +53,8 @@ the price system is precisely the fairness benchmark. The price of
 strategyproofness is $\Theta(1+\log g)$ for a single multi-minded solver
 and for many single-minded solvers, via two posted-price mechanisms and a
 convex profit-curve technique; the remaining multi-agent multi-minded
-cell admits $O(N\log g)$ and a matching $\Omega(\min(N,g))$ barrier for
-serial-demand mechanisms. Online, the price splits: against realized
+cell admits $O(N\log g)$ and has a serial-demand $\Omega(\min(N,g))$
+barrier. Online, the price splits: against realized
 lifetime floors even randomization pays exactly $g$, while with static
 public floors the residual problem is one-way search over the spread,
 deterministic $\Theta(\sqrt g)$ and randomized $\Theta(\log g)$.
@@ -233,13 +233,19 @@ provide related strategic context~\cite{ma2025}.
 \section{Model}\label{sec:model}
 
 There are $n$ trade intents (\emph{orders}) and a set of \emph{solvers}.
-A solver $i$ has private \emph{deliverable values} $v_{i,j}\ge0$ for
-orders: the best outcome it can produce for trader $j$, in $j$'s
-requested asset and normalized score units. Its batch value is
-$V_i(S)=\sum_{j\in S}v_{i,j}$, realized only if the batch executes. A
-winning bid delivers $w_j\le v_{i,j}$ to each covered order; the solver's
-profit is the retained value $V_i(S)-\sum_{j\in S}w_j$, kept in the
-produced assets rather than transferred across traders. Reports are
+A solver $i$ submitting a batched bid on a set $S$ specifies, for each
+$j\in S$, a \emph{delivered score} $y_{i,S,j}\ge0$ in $j$'s requested
+asset (trader-normalized units); the batch value is
+$V_i(S)=\sum_{j\in S}y_{i,S,j}$, realized only if the batch executes.
+Delivery is batch-specific: the same solver may achieve different
+delivered scores for order $j$ in different batches (joint execution nets
+flows and saves fees), so $V_i(S)$ is \emph{not} additive across orders
+in general. The standalone value is $V_i(\{j\})=y_{i,\{j\},j}$, and the
+complementarity factor (Definition~\ref{def:g}) measures exactly how far
+batching lifts value above the sum of standalones. A winning bid delivers
+$w_j\le y_{i,S,j}$ to each covered order; the solver's profit is
+$V_i(S)-\sum_{j\in S}w_j$, kept in produced assets, not transferred
+across traders. The floor is $c_j=\max_i V_i(\{j\})$. Reports are
 \emph{binding}: a solver cannot claim value it cannot deliver, so the
 strategic misreports relevant for our posted models are downward. Welfare
 $W=\sum_j w_j$ is an additive social objective over trader-normalized
@@ -316,7 +322,7 @@ tight, and independent of the number of orders and of prices
 \begin{proof}[Proof idea]
 \emph{Upper bound.} Process each bid of an unconstrained optimum
 independently. A bid with gain $\gamma=V/C_S\in[1,g]$ has deficit
-$D=\sum_{j\in S}(c_j-v_j)^+\le C_S$. Either drop the batch and settle
+$D=\sum_{j\in S}(c_j-y_{i,S,j})^+\le C_S$. Either drop the batch and settle
 floors, delivering $C_S=V/\gamma$, or repair starved legs using the
 batch's own surplus. Clearing $D$ loses $D(1-\theta)/\theta$, so whenever
 repair is feasible,
@@ -351,8 +357,8 @@ $d$ orders,
 \end{proposition}
 
 Say an instance has \emph{coverage} $\alpha\in[0,1]$ if every bid
-satisfies $v_j\ge\alpha c_j$ on every covered order---no leg is worse
-than $\alpha$ times the benchmark, a per-leg routing-quality floor.
+satisfies $y_{i,S,j}\ge\alpha c_j$ on every covered order---no leg is
+worse than $\alpha$ times the benchmark, a per-leg routing-quality floor.
 
 \begin{theorem}[The coverage law]\label{thm:coverage}
 Write
@@ -392,8 +398,11 @@ must deliver, and the single property used is that $w_j$ depends only on
 the order. A \emph{UDP equilibrium supporting the efficient allocation}
 is a rate system and an allocation in which every order is served at
 exactly its $w_j$, every solver's executed portfolio maximizes its
-profit $\sum_{j}(v_j-w_j)$ over feasible (executable, i.e.
-$v_j\ge w_j$) portfolios, and produced value equals $\OPT$.
+total profit
+$\sum_{S\in\mathcal P}\sum_{j\in S}(y_{i,S,j}-w_j)$ over feasible
+portfolios $\mathcal P$ (those with $y_{i,S,j}\ge w_j$ for every
+executed bid $S$ and covered order $j$), and produced value equals
+$\OPT$.
 This definition deliberately separates prices from payments: $w_j$ is an
 obligation in order $j$'s normalized delivered units, not a transfer that
 can compensate another trader. That separation is what makes the
@@ -402,7 +411,8 @@ frontier different from the transferable package-assignment theorem.
 \begin{lemma}[Batch domination under $g=1$]\label{lem:domination}
 If $g=1$ then at any rates every executable batched bid is weakly
 dominated by the sub-portfolio of its positive-profit singletons:
-$\sum_{j\in S}(v_j-w_j)=V_i(S)-\sum_jw_j\le\sum_j(V_i(\{j\})-w_j)^+$.
+$\sum_{j\in S}(y_{i,S,j}-w_j)=V_i(S)-\sum_jw_j\le
+\sum_j(V_i(\{j\})-w_j)^+$.
 Hence every solver has an individual-only best response; the one use of
 UDP is that $w_j$ is the same in a batch or a singleton.
 \end{lemma}
@@ -474,8 +484,10 @@ overlap geometry.
 \paragraph{Complexity.}
 Fair winner determination is NP-hard (from 3-dimensional matching) but
 fixed-parameter tractable in the number $P$ of directed asset pairs:
-UDP contracts each directed pair to an atomic item, and every fair bid is
-a weighted subset of the $P$ atoms. Dynamic programming over pair masks
+Under UDP, all orders on the same directed pair settle atomically: a
+feasible solution either assigns the entire directed-pair block to one
+bid or leaves it unserved. Thus every fair bid is a weighted subset of
+the $P$ atoms. Dynamic programming over pair masks
 (or equivalently weighted set packing on $P$ items) tries
 $2^P$ states and scans the bid list in each state, giving
 $2^{O(P)}\cdot\mathrm{poly}(|\mathcal B|)$.
@@ -494,6 +506,12 @@ strategyproofness cannot coexist without transfers. This places the
 problem in the no-money mechanism-design tradition~\cite{procaccia2013},
 with a blockchain-specific impossibility flavor close to post-MEV fee
 mechanism design~\cite{bahrani2024}.
+
+Throughout this section, incentive compatibility means \emph{one-sided
+dominant-strategy implementability under binding reports}: upward
+misreports are infeasible by settlement, and ``universal truthfulness''
+refers to posted-demand mechanisms whose menu is independent of the
+solver's behavior.
 
 Two impossibilities pin down the regime. First, with \emph{endogenous}
 floors---computed from the current reports---VCG-style compensation is

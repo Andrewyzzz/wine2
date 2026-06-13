@@ -5,15 +5,16 @@
 bids independently; bids cover disjoint order sets, so the repaired
 welfares add. Take a winning bid with floor mass $C_S=\sum_{j\in S}c_j>0$
 (a bid with $C_S=0$ has all floors zero and is already fair), value
-$V=\sum_{j\in S}v_j$, gain $\gamma=V/C_S\in[1,g]$, and deficit
-$D=\sum_{j\in S}(c_j-v_j)^+$. Two fair uses:
+$V=\sum_{j\in S}y_j$, where $y_j:=y_{i,S,j}$, gain
+$\gamma=V/C_S\in[1,g]$, and deficit
+$D=\sum_{j\in S}(c_j-y_j)^+$. Two fair uses:
 
 \emph{Repair.} Move value from over-served legs to starved ones. The
 total surplus available is $s=V-(C_S-D)=V-C_S+D$, and clearing the
 deficit costs $D/\theta$ units of surplus (haircut $\lambda=1-\theta$).
 This is feasible iff $V-C_S\ge D\frac{1-\theta}{\theta}$, and then the
 delivered welfare is $f=V-D\frac{1-\theta}{\theta}$. Since every delivered
-value is nonnegative, $(c_j-v_j)^+\le c_j$ and therefore $D\le C_S$.
+value is nonnegative, $(c_j-y_j)^+\le c_j$ and therefore $D\le C_S$.
 Together with $V-C_S=(\gamma-1)C_S$, feasibility holds whenever
 $\gamma-1\ge\frac{1-\theta}{\theta}$, i.e. $\gamma\ge1/\theta$; then
 \[
@@ -62,10 +63,10 @@ $f=V-\frac{D(1-\theta)}{\theta}\ge V\big(1-\frac{(1-\alpha)(1-\theta)}
 $\gamma$, equality at $\gamma=\Gamma$); dropping gives $V/\gamma\ge
 V/\Gamma$ for $\gamma\le\Gamma$ and $V/g$ for $\gamma\le g$. Hence
 $\FAIR\ge\OPT/\min(g,\Gamma)$. \emph{Lower bound.} Two orders, $c_1=0$,
-$c_2=c$; batched bid with $v_2=\alpha c$ (coverage saturated) and
-$v_1=(\gamma^\ast-\alpha)c$, $\gamma^\ast=\min(g,\Gamma)$. Repairing
-order $2$ needs $(1-\alpha)c/\theta$ from $v_1$; if $\gamma^\ast=\Gamma$
-then $v_1=(\Gamma-\alpha)c=\frac{(1-\alpha)c}{\theta}$ exactly, and if
+$c_2=c$; batched bid with $y_2=\alpha c$ (coverage saturated) and
+$y_1=(\gamma^\ast-\alpha)c$, $\gamma^\ast=\min(g,\Gamma)$. Repairing
+order $2$ needs $(1-\alpha)c/\theta$ from $y_1$; if $\gamma^\ast=\Gamma$
+then $y_1=(\Gamma-\alpha)c=\frac{(1-\alpha)c}{\theta}$ exactly, and if
 $\gamma^\ast=g<\Gamma$ the batch is irreparable. Either way $\FAIR=c$,
 $\OPT=\gamma^\ast c$.\hfill$\square$
 \end{proof}
@@ -73,9 +74,15 @@ $\OPT=\gamma^\ast c$.\hfill$\square$
 \section{Full Proofs for Section~\ref{sec:walras}}
 
 \begin{proof}[Proof of Lemma~\ref{lem:domination}]
-$\sum_{j\in S}(v_j-w_j)=V_i(S)-\sum_{j\in S}w_j\le
-\sum_{j\in S}V_i(\{j\})-\sum_{j\in S}w_j\le
-\sum_{j\in S}(V_i(\{j\})-w_j)^+$, the middle step by $g=1$. Each
+\[
+\begin{aligned}
+\sum_{j\in S}(y_{i,S,j}-w_j)
+&=V_i(S)-\sum_{j\in S}w_j\\
+&\le \sum_{j\in S}V_i(\{j\})-\sum_{j\in S}w_j\\
+&\le \sum_{j\in S}(V_i(\{j\})-w_j)^+ .
+\end{aligned}
+\]
+The middle step uses $g=1$. Each
 positive-profit singleton has $V_i(\{j\})>w_j$, hence is executable; a
 non-executable batch is not a deviation. The obligation $w_j$ is the same
 whether $j$ is served in the batch or individually, which is the only
@@ -133,10 +140,12 @@ value already attained.\hfill$\square$
 NP-hardness is a reduction from 3-dimensional matching: orders are
 ground elements, batched bids are triples of value $1$, and a fair
 welfare-$n$ allocation exists iff a perfect matching does. For
-fixed-parameter tractability, UDP contracts each directed pair to an
-atomic item. After fair filtering, every surviving bid is a weighted
-subset of the $P$ atoms, and winner determination is weighted set packing
-on a universe of size $P$. The dynamic program
+fixed-parameter tractability, treat each directed pair as an atomic item
+under UDP: all orders on the same directed pair settle together, so a
+feasible solution either assigns the entire directed-pair block to one
+bid or leaves it unserved. After fair filtering, every surviving bid is a
+weighted subset of the $P$ atoms, and winner determination is weighted set
+packing on a universe of size $P$. The dynamic program
 $DP[M]=\max\{DP[M\setminus T_b]+w_b:b\text{ uses }T_b\subseteq M\}$
 over masks $M\subseteq[P]$ scans the bid list at each state, giving
 $2^{O(P)}\cdot\mathrm{poly}(|\mathcal B|)$.
@@ -238,14 +247,16 @@ fraction of $X$ in expectation while every realization secures $Y$, so by
 $\max(X/a,Y)\ge(X+Y)/(a+1)$ with $a=e(K+1)$,
 $\E[W]\ge\FAIR/(e(\lceil\ln g\rceil+1)+1)$.
 
-\emph{(ii) Coupled menu.} Post every option at price $C_S\,t$,
-$t=e^k$, $k\sim\mathrm{Unif}\{0,\dots,K\}$; the solver demands a
-profit-maximizing disjoint collection $\mathcal C^\ast(t)$. This is a
-posted-demand mechanism (the menu is independent of any report), hence
-universally truthful, and feasible because any demanded $S$ has
-$V_S\ge C_St\ge C_S$, so the posted delivery clears its floors. Let
+\emph{(ii) Coupled menu.} Draw $k$ uniformly from $\{0,\ldots,K\}$ and
+set $t=e^k$. Post every option at price $C_S\,t$. Let the solver demand a
+profit-maximizing disjoint collection $\mathcal C^\ast(t)$. This is
+universally truthful because the posted menu is report-independent. It is
+feasible because any demanded $S$ has $V_S\ge C_St\ge C_S$, so posted
+delivery clears its floors. Let
 \[
-p(t)=\max_{\mathcal C\text{ disjoint}}\sum_{S\in\mathcal C}(V_S-C_St).
+p(t)=
+\max_{\mathcal C\text{ disjoint}}
+\sum_{S\in\mathcal C}(V_S-C_St).
 \]
 As a maximum of finitely many affine decreasing functions, $p$ is convex,
 piecewise linear, nonincreasing, with $p(t)=0$ for $t\ge g$ (every
