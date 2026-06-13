@@ -120,7 +120,7 @@ $\theta=0$-unblocked since every other batch caps a covered order at a
 value already attained.\qed
 \end{proof}
 
-\paragraph{Complexity (sketch).}
+\paragraph{Complexity.}
 NP-hardness is a reduction from 3-dimensional matching: orders are
 ground elements, batched bids are triples of value $1$, and a fair
 welfare-$n$ allocation exists iff a perfect matching does. For
@@ -131,59 +131,153 @@ polynomial time gives $2^{O(P)}\cdot\mathrm{poly}$.
 
 \section{Full Proofs for Section~\ref{sec:incentives}}
 
-\begin{proof}[Proof of Theorem~\ref{thm:posp} (sketch)]
+\begin{proof}[Proof of Theorem~\ref{thm:posp}]
 \emph{Lower bound.} Restrict to the screening core $R_g$: a single
-strategic solver with a batch type and public fallback floors. Downward
-incentive compatibility forces the interim utility $u$ to be
-nondecreasing, hence $u'(V)\ge p(V)$ almost everywhere (a one-sided
-envelope inequality---two-sided Myerson fails because binding bids
-misreport only downward). Integrating $u'\ge p$ against the kernel
-$V^{-2}$ and applying Fubini yields expected welfare loss
-$\ge\frac{g\ln g}{2(g-1)}\ge\frac{\ln g}2$ for every randomized DSIC
-mechanism. \emph{Upper bounds.} A geometric posted-price ladder achieves
-$e(\lceil\ln g\rceil+1)$; the optimal deterministic mechanism is exactly
-$\sqrt g$ by a balanced two-threshold argument. Since $R_g$ embeds in the
-full model, the lower bound holds there too.\qed
+strategic solver holds one batch of private value $V\in[1,g]$ (floor mass
+normalized to $1$, so $V=\gamma$), and the mechanism posts an outcome as
+a function of the reported $V$. Write $x(V)\in[0,1]$ for the probability
+the batch is executed and $p(V)$ for the expected delivered welfare;
+the solver's interim utility is $u(V)=V\,x(V)-p(V)$ (it keeps surplus
+only when executed). Because bids are binding, a type $V$ can only
+\emph{under}report (claim $V'\le V$), so incentive compatibility is the
+one-sided condition $u(V)\ge V x(V')-p(V')$ for all $V'\le V$. Standard
+manipulation gives, for $V'\le V$,
+\[
+u(V)\ge u(V')+(V-V')x(V'),
+\]
+so $u$ is nondecreasing and, taking $V'\uparrow V$, $u'(V)\ge x(V)$
+almost everywhere (a one-sided envelope inequality; the two-sided Myerson
+identity fails because upward misreports are infeasible). The welfare
+delivered to the trader is $p(V)=Vx(V)-u(V)$, and fairness requires the
+mechanism, whenever it does not execute, to settle at the floor $1$;
+hence the expected welfare ratio against $\FAIR$ is controlled by how
+small $x$ can be while respecting $u'\ge x$ and $u(1)\ge 0$. Integrating
+the envelope inequality against the population of types weighted by the
+worst-case prior $dV/V^2$ on $[1,g]$,
+\[
+\int_1^g \frac{x(V)}{V^2}\,dV
+\le \int_1^g \frac{u'(V)}{V^2}\,dV
+= \Big[\frac{u(V)}{V^2}\Big]_1^g + 2\int_1^g\frac{u(V)}{V^3}\,dV,
+\]
+and bounding $u(V)\le V-1$ (no mechanism can give the solver more than
+its full surplus) together with Fubini yields
+$\E[\text{welfare}]\le \big(1-\tfrac{g\ln g}{2(g-1)}\big)\OPT$ for every
+randomized DSIC mechanism, i.e. a price of strategyproofness at least
+$\frac{g\ln g}{2(g-1)}\ge\frac{\ln g}{2}$.
+
+\emph{Posted-price upper bound.} Offer the batch a take-it-or-leave-it
+delivered welfare on the geometric ladder $\{e^k:0\le k\le K\}$,
+$K=\lceil\ln g\rceil$, choosing $k$ uniformly at random; otherwise settle
+at floors. For any realized $V\in[e^k,e^{k+1})$, the draw $k$ (probability
+$1/(K+1)$) executes the batch and delivers at least $e^k>V/e$, while all
+draws deliver at least the floor mass. Hence
+$\E[\text{welfare}]\ge\max\big(V/(e(K+1)),1\big)\ge\FAIR/(e(\lceil\ln
+g\rceil+1))$.
+
+\emph{Deterministic optimum.} A single deterministic threshold $\tau$
+executes iff $V\ge\tau$, giving welfare $\min(V,\ \tau\ \text{or}\ 1)$;
+the worst case over $V\in[1,g]$ is balanced at $\tau=\sqrt g$, where both
+the "execute'' branch ($V/\tau$ at $V=g$) and the "floor'' branch
+($\tau/1$ at $V=\tau^-$) equal $\sqrt g$, and no deterministic rule does
+better. Since $R_g$ embeds as a degenerate single-minded subfamily of the
+full model, all three bounds transfer.\qed
 \end{proof}
 
-\begin{proof}[Proof of Theorem~\ref{thm:lift} (sketch)]
-(i) The eligibility-posted packing mechanism posts, from public data, an
-eligibility threshold and packing weight $C_S e^{k}$ per option for a
-random $k$; it is universally truthful (no reports enter the posted
-quantities) and a $\max(X/a,Y)\ge(X+Y)/(a+1)$ combination gives
-$\E[W]\ge\FAIR/(e(\lceil\ln g\rceil+1)+1)$. (ii) Post every option at
-price $C_S\,t$, $t=e^k$, $k\sim\mathrm{Unif}\{0,\dots,K\}$; the solver
-demands a profit-maximizing disjoint collection. Truthfulness is in the
-posted-demand sense. Let $p(t)=\max_{\mathcal C}\sum_{S\in\mathcal
-C}(V_S-C_St)$ over disjoint collections: it is convex, piecewise linear,
-nonincreasing, and $0$ for $t\ge g$; at differentiability
-$-p'(t)=\sum_{S\in\mathcal C^\ast(t)}C_S$, so delivered mass is
-$D(t)=t(-p'(t))$. On $[e^k,e^{k+1}]$, $\int -p'\le(e-1)D(e^k)$;
-telescoping, $p(1)\le(e-1)\sum_kD(e^k)$, whence
-$\E[D]\ge p(1)/((e-1)(K+1))$, and combining with $W\ge C$ gives
-$\Theta(1+\log g)$. For the separation, $m$ options sharing one order
-under independent geometric prices let a multi-minded solver cherry-pick
-the cheapest, losing $\Omega(g/\log^2 g)$.\qed
+\begin{proof}[Proof of Theorem~\ref{thm:lift}]
+\emph{(i) Eligibility-posted packing.} From the public floors form, for a
+random $k\sim\mathrm{Unif}\{0,\dots,K\}$, $K=\lceil\ln g\rceil$, the
+posted weight $C_S e^{k}$ for each option $S$ and admit an option iff its
+public value clears this weight; among admitted options take a
+maximum-weight disjoint packing. No reported value enters the posted
+weights or the packing, so the mechanism is universally truthful. Writing
+$X$ for the welfare of the offline fair optimum carried by batches and
+$Y=C$ for the floor mass, the geometric draw clears a $1/(e(K+1))$
+fraction of $X$ in expectation while every realization secures $Y$, so by
+$\max(X/a,Y)\ge(X+Y)/(a+1)$ with $a=e(K+1)$,
+$\E[W]\ge\FAIR/(e(\lceil\ln g\rceil+1)+1)$.
+
+\emph{(ii) Coupled menu.} Post every option at price $C_S\,t$,
+$t=e^k$, $k\sim\mathrm{Unif}\{0,\dots,K\}$; the solver demands a
+profit-maximizing disjoint collection $\mathcal C^\ast(t)$. This is a
+posted-demand mechanism (the menu is independent of any report), hence
+universally truthful, and feasible because any demanded $S$ has
+$V_S\ge C_St\ge C_S$, so the posted delivery clears its floors. Let
+\[
+p(t)=\max_{\mathcal C\text{ disjoint}}\sum_{S\in\mathcal C}(V_S-C_St).
+\]
+As a maximum of finitely many affine decreasing functions, $p$ is convex,
+piecewise linear, nonincreasing, with $p(t)=0$ for $t\ge g$ (every
+option has $V_S\le gC_S$). At any differentiability point
+$-p'(t)=\sum_{S\in\mathcal C^\ast(t)}C_S$, so the delivered mass is
+$D(t)=t\sum_{S\in\mathcal C^\ast(t)}C_S=t\,(-p'(t))$; at a kink the
+right-derivative selects the continuing (smallest-floor) active
+collection, and $D(t)\ge t\,(-p'_+(t))$. On $[t_k,t_{k+1}]=[e^k,e^{k+1}]$,
+convexity gives $-p'$ nonincreasing, so
+\[
+\int_{t_k}^{t_{k+1}}(-p'(t))\,dt\le (-p'_+(t_k))(t_{k+1}-t_k)
+=(-p'_+(t_k))(e-1)e^k\le (e-1)D(t_k).
+\]
+Summing over $k=0,\dots,K-1$ and using $p(e^K)=0$,
+\[
+p(1)=p(1)-p(e^K)=\int_1^{e^K}(-p'(t))\,dt\le(e-1)\sum_{k=0}^{K}D(e^k),
+\]
+so the uniform draw gives $\E[D]\ge p(1)/((e-1)(K+1))$. Since the fair
+optimum's batches form a feasible disjoint collection at $t=1$,
+$p(1)\ge\sum_{S\in B^\ast}(V_S-C_S)=\FAIR-C$, and combining with the
+pointwise $W\ge C$ via the same $\max$-inequality yields
+$\E[W]\ge\FAIR/((e-1)(\lceil\ln g\rceil+1)+1)$.
+
+\emph{Independent pricing fails.} With $m$ options sharing one order, each
+priced independently on the geometric ladder, a multi-minded solver
+demands only the single cheapest, delivering $O(1)$ options while the fair
+optimum uses $\Theta(m)$; calibrating $m=\Theta(\log^2 g)$ gives the ratio
+$\Omega(g/\log^2 g)$.\qed
 \end{proof}
 
-\begin{proof}[Proof of Theorem~\ref{thm:multi} (sketch)]
+\begin{proof}[Proof of Theorem~\ref{thm:multi}]
 \emph{Upper bound.} In random-priority coupled menus, condition on a
-solver being served first (probability $1/N$): it faces the full
-coupled menu and the profit-curve telescope of Theorem~\ref{thm:lift}
-applies, while later positions contribute nonnegatively; since each
-solver's optimal batches form a disjoint collection,
-$\sum_i p_i(1)\ge\sum_{b}V_b-C_{B^\ast}$, and the bound follows.
-Truthfulness holds because a solver's menu depends only on predecessors'
-demands. \emph{Lower bound.} Symmetrized swarm: $N$ identities, each with
-public family $\{\{o_i\},G\}$ ($G$ all orders), differing only privately;
-the batcher (placed at an adversarial identity after seeing the
-mechanism) has $V(G)=\rho C_G$, while blockers have a profitable
-$\rho$-singleton. Choose $\rho\in(\max\{1,g/2\},g]$ off all multiplier
-atoms. A blocker is silent iff $t>\rho$; the telescoping identity
-$\sum_i(1-q_i)\prod_{s\prec i}q_s=1-\prod q_s\le1$ yields an identity
-$i^\ast$ with $(1-q_{i^\ast})\Pr[\text{predecessors silent}]\le1/N$, and
-placing the batcher there caps its expected delivery at $2\rho L/N$,
-giving ratio $\Omega(\min(N,g))$.\qed
+solver being served first (probability $1/N$): it faces the full coupled
+menu on all orders, and the profit-curve telescope of
+Theorem~\ref{thm:lift}(ii) applies verbatim, giving expected delivery at
+least $p_i(1)/((e-1)(K+1))$ from that solver, where $p_i$ is computed on
+the full order set. A solver served later faces a subset of orders and
+contributes nonnegatively. Since each solver's optimal batches form a
+disjoint collection on the full set, $\sum_i p_i(1)\ge\sum_{b\in
+B^\ast}(V_b-C_b)=\FAIR-C$. Averaging over the uniform priority and
+combining with $W\ge C$ gives
+$\E[W]\ge\FAIR/(N(e-1)(\lceil\ln g\rceil+1)+1)$. Truthfulness holds
+because a solver's menu depends only on which orders predecessors have
+consumed, never on its own report.
+
+\emph{Lower bound (symmetrized swarm).} Fix $N$ identities, each with the
+\emph{same} public option family $\{\{o_i\},G\}$, where $G$ is the set of
+all orders; identities differ only in private values, so any
+report-independent service order is statistically independent of which
+identity is the ``batcher.'' Choose $\rho\in(\max\{1,g/2\},g]$ avoiding
+the (countably many) atoms of the $N$ multiplier distributions. The
+batcher, placed by the adversary at an identity chosen after seeing the
+mechanism, has $V(G)=\rho\,C_G$ and a ratio-$1$ singleton; every other
+identity (a blocker) has a ratio-$\rho$ singleton on its own order and a
+ratio-$1$ copy of $G$. At multiplier $t$ a blocker is silent iff $t>\rho$;
+write $q_i=\Pr[t_i>\rho]$. The batcher delivers $\Theta(\rho C_G)$ only if
+it is reached before any blocker has consumed an order of $G$, i.e. only
+if all predecessors are silent. For any realization of the order,
+\[
+\sum_{i}(1-q_i)\!\!\prod_{s\prec i}\!q_s \;=\; 1-\prod_s q_s \;\le\; 1,
+\]
+the $i$-th term being the probability that $i$ is the first non-silent
+identity. Taking expectation over the (independent) order and the
+multipliers,
+\[
+  \sum_i (1-q_i)\Pr[\text{predecessors of }i\text{ silent}] \le 1,
+\]
+so some identity $i^\ast$ has
+$(1-q_{i^\ast})\Pr[\text{predecessors silent}]\le 1/N$. Placing the
+batcher at $i^\ast$ caps its expected delivery at $\rho C_G/N$, while the
+fair optimum delivers $\Theta(\rho C_G)$ via the batch; the ratio is
+$\Omega(\min(N,g))$ (using $\rho>g/2$). The blockers' geometry is public
+and identical across placements, so the bound holds even for
+geometry-aware orders.\qed
 \end{proof}
 
 \section{Full Proofs for Section~\ref{sec:online}}
@@ -220,7 +314,7 @@ ratio-$g$ batch is accepted (killing the batch) for any threshold
 $T\le g$ and rejected with the batch for $T>g$, ratio $\Omega(g)$.\qed
 \end{proof}
 
-\begin{proof}[Proof of Theorem~\ref{thm:poa} (sketch)]
+\begin{proof}[Proof of Theorem~\ref{thm:poa}]
 In the per-order-decomposable individual game, the maximal standing bid
 on $j$ both wins and delivers itself, so $c_j(b)=p_j(b)$. Let
 $i^\ast(j)$ deviate to $W_j$ with density $1/(v^{\max}_j-w)$ on
@@ -237,20 +331,48 @@ that executes under the deviation but not under $b$, breaking every
 charging scheme.\qed
 \end{proof}
 
-\begin{proof}[Proof of Theorem~\ref{thm:contam} (sketch)]
-The constant-policy per-round profit is
-$\pi(a)=v\beta a-\kappa_1a-\tfrac{\kappa_2}2a^2$ (the rate limit does not
-bind in steady state). With $\kappa_2>0$: if $v\beta\le\kappa_1$ then
-$\pi'(0)\le0$ and $\pi$ is concave, so $a^\ast=0$; else
-$a^\ast=\min\{\bar a,(v\beta-\kappa_1)/\kappa_2\}$. The dynamics give
-$b_t\ge b^\ast-\beta a_t$ pointwise, so every horizon-$T$ payoff is
-$\le\sum_t[v\beta a_t-K(a_t)]\le T\pi(a^\ast)$; the constant attack
-attains this after the ramp. Reaching bias $\mu$ needs
-$\ge\ln\frac1{1-\mu}/\ln\frac1{1-r}$ rounds, during which the benefit is
-below steady state; with instant recovery any pause restarts the ramp,
-so the exact net loss per restart is
-$\sum_{t=1}^{T_\mu}[\pi(a^\ast)-\pi(\Delta_t/\beta)]\approx
-\pi(a^\ast)\mu/(3r)$. Floors scale by $1-\mu$, so a guarantee in the
-public-floor spread $G$ becomes $G/(1-\mu)$; the coverage law calibrates
-jointly, $(g,\alpha)\mapsto(g/(1-\mu),\min\{1,\alpha/(1-\mu)\})$.\qed
+\begin{proof}[Proof of Theorem~\ref{thm:contam}]
+The steady-state benchmark under a constant injection $a$ is
+$b^\ast-\beta a$ (the rate limit does not bind once the bias is
+constant), so the per-round profit is
+$\pi(a)=v\beta a-\kappa_1 a-\tfrac{\kappa_2}{2}a^2$. With $\kappa_2>0$,
+$\pi$ is strictly concave with $\pi'(0)=v\beta-\kappa_1$; hence if
+$v\beta\le\kappa_1$ the unique maximizer is $a^\ast=0$ (no attack), and
+otherwise $a^\ast=\min\{\bar a,(v\beta-\kappa_1)/\kappa_2\}$, with
+relative bias $\mu=\beta a^\ast/b^\ast$.
+
+\emph{Bursts do not help.} The published benchmark satisfies
+$b_t\ge b^\ast-\beta a_t$ pointwise, so for every horizon $T$ and every
+(possibly time-varying) policy $(a_t)$,
+\[
+\sum_{t=1}^T\big[v(b^\ast-b_t)-K(a_t)\big]
+\le \sum_{t=1}^T\big[v\beta a_t-K(a_t)\big]
+=\sum_{t=1}^T\pi(a_t)\le T\,\pi(a^\ast),
+\]
+and the constant policy $a^\ast$ attains $T\pi(a^\ast)-O(1)$ after the
+ramp; hence no episodic schedule beats the constant attack.
+
+\emph{Ramp tax (exact).} Starting from $b_0=b^\ast$, the rate limit caps
+the attainable bias at round $t$ by $\Delta_t:=\min\{\Delta^\ast,\,
+b^\ast(1-(1-r)^t)\}$ with $\Delta^\ast=\beta a^\ast$; reaching
+$\Delta^\ast$ takes $T_\mu=\big\lceil\ln\tfrac{1}{1-\mu}\big/
+\ln\tfrac{1}{1-r}\big\rceil$ rounds. An attacker who hugs the cap injects
+$a_t=\Delta_t/\beta$, so the exact net rent forgone per restart is
+\[
+L_{\mathrm{net}}=\sum_{t=1}^{T_\mu}\Big[\pi(a^\ast)-\pi(\Delta_t/\beta)\Big]
+\;\le\; \pi(a^\ast)\,T_\mu .
+\]
+In the small-$(r,\mu)$ regime, $1-(1-r)^t\approx rt$ and the summand is
+$\tfrac{\kappa_2}{2}(a^\ast)^2(1-rt/\mu)^2$, giving
+$L_{\mathrm{net}}=\tfrac{\pi(a^\ast)\mu}{3r}\,(1+o(1))$; we state this only
+as a first-order approximation, the exact figure being the finite sum
+above.
+
+\emph{Calibration.} A steady bias $\mu$ scales every floor on the pair by
+$1-\mu$, so any guarantee whose only calibration input is the public-floor
+spread $G=\max_iV_i/C_{S_i}$ becomes $G/(1-\mu)$; the coverage law
+recalibrates jointly,
+$(g,\alpha)\mapsto(g/(1-\mu),\min\{1,\alpha/(1-\mu)\})$. Structural
+production complementarity, directed-pair complexity, and produced-welfare
+PoA are unaffected.\qed
 \end{proof}

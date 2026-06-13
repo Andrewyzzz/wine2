@@ -27,8 +27,8 @@ No-Numeraire Combinatorial Trade-Intent Auctions}
 \maketitle
 
 \begin{abstract}
-Blockchain trade-intent auctions, which currently intermediate on the
-order of ten billion dollars in trades per month, are combinatorial
+Blockchain trade-intent auctions, which currently intermediate billions
+of dollars in trades per month, are combinatorial
 because executing several intents jointly produces extra efficiencies,
 yet they have \emph{no numeraire}: there is no common unit in which to
 redistribute those efficiencies. The deployed fix builds an
@@ -68,7 +68,7 @@ Blockchain ``trade-intent'' auctions let users state a desired exchange
 of one asset for another and delegate execution to competing agents
 called \emph{solvers}; the protocol collects intents off-chain and
 auctions them in batches. These markets are economically significant---
-recent figures put monthly volume on the order of ten billion
+recent figures put monthly volume on the order of billions of
 dollars\footnote{Order-of-magnitude figure from the deployment
 literature on the studied protocol; the precise figure and asset counts
 are recalled in the full version.}---and they are \emph{combinatorial}:
@@ -248,6 +248,11 @@ yields $(1-\lambda)x$ for another. Write $\theta:=1-\lambda$ for
 full numeraire. Conversion is per-bid.
 \end{definition}
 
+Per-bid conversion models a solver rebalancing net flows \emph{within} a
+single settlement (its own routing), not across settlements or traders;
+this is a stylized but conservative abstraction of deployed solver
+behavior.
+
 The deployed mechanism additionally requires uniform clearing prices per
 directed token pair (\emph{uniform directed prices}, UDP), forcing all
 orders on one directed pair into a single winning bid. UDP is vacuous in
@@ -387,14 +392,26 @@ exactly the deployed regime.
 
 \section{The Price of Strategyproofness}\label{sec:incentives}
 
-The impossibility of fairness-compatible strategyproof mechanisms with
-\emph{endogenous} floors (VCG is infeasible without transfers; an online
-incompatibility, Section~\ref{sec:online}) motivates an
-\emph{exogenous-benchmark} regime: floors come from a public, $g$-cali\-brated
-historical benchmark, and solvers are single- or multi-minded with
-private values passing the filter. We measure the price of
-strategyproofness $\mathrm{PoSP}$, the welfare ratio between $\FAIR$ and
-the best universally truthful fair mechanism.
+Two impossibilities pin down the regime. First, with \emph{endogenous}
+floors---computed from the current reports---no fair mechanism can be
+strategyproof while running VCG, because the no-numeraire constraint makes
+VCG's compensating transfers infeasible (Proposition~\ref{prop:core} and
+the absence of a numeraire). Second, online with realized lifetime floors,
+no fair mechanism beats ratio $g$ even with randomization
+(Theorem~\ref{thm:online}(i)): a solver settling a batch can be undercut
+by a later standalone bid that raises a covered order's own floor. Both
+failures trace to the same source---when the floor responds to current
+behavior, a solver can manipulate its own benchmark---so the natural and
+\emph{deployed} response is to fix floors from a public, $g$-calibrated
+historical window, severing that channel while preserving the spread
+$g$ as the operative parameter. We therefore analyze this
+exogenous-benchmark regime; the price of strategyproofness $\mathrm{PoSP}$
+is the welfare ratio between $\FAIR$ and the best universally truthful
+fair mechanism, and solvers are single- or multi-minded with private
+values passing the filter. The endogenous results above show this is a
+relaxation forced by impossibility, not a convenience: under endogenous
+floors the relevant question is not the price of strategyproofness but its
+non-existence.
 
 The core of the regime is already nontrivial for one strategic solver:
 
@@ -546,6 +563,13 @@ $\widehat G^{\mathrm{obs}}>2$ in 25.3\% of auctions and
 $\widehat G^{\mathrm{obs}}>4$ in 20.2\%; among small-notional auctions,
 the share with $\widehat G^{\mathrm{obs}}>2$ is 63.1\%. Thus the spread
 phenomenon is not confined to worst-case constructions.
+This also answers how tightly $\min(g,1/\theta)$ binds on realistic
+instances: as $g\to1$ the bound collapses to $1$ (fairness becomes free,
+the common case for liquid pairs), while the heavy right tail of the
+visible spread---driven by thin-liquidity long-tail assets, where shallow
+visible depth mechanically widens the spread---shows that non-trivial $g$,
+and hence a bound bounded away from $1$, is exactly where small-notional
+orders live.
 
 \paragraph{Benchmark robustness.}
 The same trace also motivates the contamination model. Under a naive
