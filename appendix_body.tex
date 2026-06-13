@@ -1,4 +1,4 @@
-\section{Act I Proofs: Fairness and Coverage}
+\section{Full Proofs for Section~\ref{sec:pof}}
 
 \begin{proof}[Proof of Theorem~\ref{thm:pof}]
 \emph{Upper bound.} Fix an unconstrained optimum and process its winning
@@ -70,7 +70,7 @@ $\gamma^\ast=g<\Gamma$ the batch is irreparable. Either way $\FAIR=c$,
 $\OPT=\gamma^\ast c$.\hfill$\square$
 \end{proof}
 
-\section{Act II Proofs: Equilibrium, Core, and Complexity}
+\section{Full Proofs for Section~\ref{sec:walras}}
 
 \begin{proof}[Proof of Lemma~\ref{lem:domination}]
 $\sum_{j\in S}(v_j-w_j)=V_i(S)-\sum_{j\in S}w_j\le
@@ -138,7 +138,7 @@ into one winning bid, so a solution is a choice of one bid per pair;
 enumerating over $2^{O(P)}$ pair-assignments and solving each in
 polynomial time gives $2^{O(P)}\cdot\mathrm{poly}$.
 
-\section{Act III Proofs: Strategyproofness}
+\section{Full Proofs for Section~\ref{sec:incentives}}
 
 \begin{proof}[Proof of Theorem~\ref{thm:incompat}]
 Let there be one order. Solver $i$ has private deliverable value $v_i$
@@ -311,7 +311,7 @@ and identical across placements, so the bound holds even for
 geometry-aware orders.\hfill$\square$
 \end{proof}
 
-\section{Online, Robustness, and Strategic Play}
+\section{Full Proofs for Section~\ref{sec:online}}
 
 \begin{proof}[Proof of Proposition~\ref{prop:online}]
 Settle-at-deadline is fair and achieves $C$ on every instance, while
@@ -407,3 +407,27 @@ $(g,\alpha)\mapsto(g/(1-\mu),\min\{1,\alpha/(1-\mu)\})$. Structural
 production complementarity, directed-pair complexity, and produced-welfare
 PoA are unaffected.\hfill$\square$
 \end{proof}
+
+\section{Deployment Diagnostics}\label{app:empirical}
+
+\begin{table}[h]
+\centering
+\caption{Deployment diagnostics used only for calibration. The visible
+spread is auction-level and observable; it is not the structural
+complementarity factor $g$.}
+\label{tab:empirical}
+\footnotesize
+\begin{tabular}{@{}ll@{}}
+\toprule
+Diagnostic & Value or interpretation\\
+\midrule
+Competitions in trace & 802,816 post-adoption solver competitions\\
+Covered notional / gap & \$54.69B / \$5.13M (about 0.94 bps)\\
+Visible spread tail & $\widehat G^{\mathrm{obs}}>2$: 25.3\%;
+  $\widehat G^{\mathrm{obs}}>4$: 20.2\%\\
+Small-notional tail & $\widehat G^{\mathrm{obs}}>2$: 63.1\%\\
+Directed-pair support $P$ & directly observable from requested/paid pairs\\
+Naive local reserve & 97.1\% vulnerable cell-windows in diagnostic\\
+\bottomrule
+\end{tabular}
+\end{table}
