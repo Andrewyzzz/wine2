@@ -237,10 +237,12 @@ transfer.\hfill$\square$
 \begin{proof}[Proof of Theorem~\ref{thm:lift}]
 \emph{(i) Eligibility-posted packing.} From the public floors form, for a
 random $k\sim\mathrm{Unif}\{0,\dots,K\}$, $K=\lceil\ln g\rceil$, the
-posted weight $C_S e^{k}$ for each option $S$ and admit an option iff its
-public value clears this weight; among admitted options take a
-maximum-weight disjoint packing. No reported value enters the posted
-weights or the packing, so the mechanism is universally truthful. Writing
+posted weight $C_S e^{k}$ for each option $S$ and let a solver accept its
+option iff its binding value clears this weight; among accepted options
+take a maximum-weight disjoint packing using the posted weights. The
+posted weights and packing rule are report-independent, so each solver
+faces a take-it-or-leave-it offer and the mechanism is universally
+truthful. Writing
 $X$ for the welfare of the offline fair optimum carried by batches and
 $Y=C$ for the floor mass, the geometric draw clears a $1/(e(K+1))$
 fraction of $X$ in expectation while every realization secures $Y$, so by
