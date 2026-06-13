@@ -28,37 +28,22 @@ No-Numeraire Combinatorial Trade-Intent Auctions}
 \maketitle
 
 \begin{abstract}
-Blockchain trade-intent auctions, which currently intermediate billions
-of dollars in trades per month, are combinatorial
-because executing several intents jointly produces extra efficiencies,
-yet they have \emph{no numeraire}: there is no common unit in which to
-redistribute those efficiencies. The deployed fix builds an
-\emph{endogenous fairness benchmark} from the bids and admits a batched
-bid only if it beats that benchmark for every covered trader. We give a
-worst-case theory of this design around one invariant: the
-complementarity factor $g$, the largest ratio of a batch's value to the
-sum of its components' standalone values. The price of fairness is
-exactly $\min(g,1/\theta)$ in liquidity $\theta=1-\lambda$, tight for
-all parameters and independent of the number of orders and of prices;
-the endpoints give a dichotomy between $g$ (no numeraire) and $1$ (full
-numeraire). Batch size is irrelevant; the right refinement is a per-leg
-coverage floor $\alpha$, under which the exact law is
-$\min(g,\alpha+(1-\alpha)/\theta)$. A Walrasian/UDP equilibrium
-supporting an efficient allocation exists for every instance \emph{iff}
-$g=1$, by native no-numeraire arguments, and at the trader-optimal
-equilibrium the price system \emph{is} the fairness benchmark. The
-price of strategyproofness is $\Theta(1+\log g)$ for a single
-multi-minded solver and for many single-minded solvers, via two
-mechanisms and a convex profit-curve technique; the remaining
-multi-agent multi-minded cell admits $O(N\log g)$ and a matching
-$\Omega(\min(N,g))$ barrier for serial-demand mechanisms. Online, the
-price splits: against realized lifetime floors even randomization pays
-exactly $g$, while with static public floors the residual problem is
-one-way search over the spread, deterministic $\Theta(\sqrt g)$ and
-randomized $\Theta(\log g)$. Finally, manipulating the benchmark itself
-is a priced game with a closed-form bias and a sharp participation
-threshold. Throughout, one scale-free family governs the informational
-and the incentive price of the spread $g$.
+Trade-intent auctions are combinatorial but have no numeraire: batching
+creates surplus, yet there is no common asset in which to redistribute
+it. We give a worst-case theory of the deployed fair-combinatorial
+auction around one invariant, the complementarity factor $g$, the largest
+ratio between a batch's value and its standalone components. Three
+prices are governed by this same spread. First, the exact price of
+fairness is $\min(g,1/\theta)$ under liquidity $\theta$, with the refined
+coverage law $\min(g,\alpha+(1-\alpha)/\theta)$. Second, $g=1$ is the
+structural threshold: a UDP/Walrasian equilibrium supporting efficiency
+exists for every instance iff $g=1$, and the deployed filter is a
+singleton-core constraint. Third, after endogenous-benchmark
+impossibilities force public historical floors, the price of
+strategyproofness is $\Theta(1+\log g)$, proved by a one-sided
+downward-IC envelope and geometric posted menus. We also give companion
+complexity, deployment-calibration, online, and benchmark-manipulation
+results, all feeding back through the same parameter $g$.
 \keywords{Combinatorial auctions \and Price of fairness \and
 Mechanism design \and Blockchain \and Competitive analysis.}
 \end{abstract}
@@ -109,62 +94,22 @@ which is what gives the design a unified analysis rather than a
 collection of unrelated bounds.
 
 \paragraph{Contributions.}
-The main results are Theorems~\ref{thm:pof}--\ref{prop:walras}; they give
-the exact fairness, coverage, and equilibrium frontiers of the model.
-Sections~\ref{sec:incentives}--\ref{sec:online} then show that the same
-spread parameter $g$ also governs incentives, online behavior, and
-benchmark manipulation.
-\begin{enumerate}[leftmargin=*,itemsep=2pt]
-\item \textbf{Price of fairness (Section~\ref{sec:pof}).} The welfare
-ratio between the unconstrained optimum and the best fair outcome is
-exactly $\PoF(\theta,g)=\min(g,1/\theta)$, tight for all $\theta,g$ and
-independent of the number of orders and of prices, with a no-numeraire/
-numeraire dichotomy $\{g,1\}$. The binding instance is an asymmetry at
-the \emph{repair/drop indifference point}, not at maximal
-complementarity. Batch size is not the right parameter; under a per-leg
-coverage floor $\alpha$ the exact law is
-$\min\!\big(g,\alpha+\tfrac{1-\alpha}{\theta}\big)$, pricing the worst
-single-leg shortfall discounted by liquidity.
-
-\item \textbf{Equilibrium existence and the core
-(Section~\ref{sec:walras}).} A Walrasian/UDP equilibrium supporting an
-efficient allocation exists for every instance \emph{iff} $g=1$, both
-directions proved natively in the no-numeraire model; at the
-trader-optimal equilibrium the obligations are exactly the fairness
-floors. The deployed filter is precisely the singleton-coalition core
-constraint, the individual allocation always lies in the multiplicative
-$g$-core (tight), and the no-numeraire core can be nonempty where the
-transferable core is empty.
-
-\item \textbf{Price of strategyproofness (Section~\ref{sec:incentives}).}
-In an exogenous-benchmark regime that the impossibility results
-naturally motivate, the price of strategyproofness is $\Theta(1+\log g)$
-both for many single-minded solvers and for one multi-minded solver, via
-an eligibility-posted packing mechanism and a coupled-menu mechanism
-with a convex profit-curve argument; independent option pricing instead
-pays $\Omega(g/\log^2 g)$. The remaining multi-agent multi-minded cell is
-pinned between $O(N\log g)$ and an $\Omega(\min(N,g))$ barrier for
-serial-demand mechanisms.
-
-\item \textbf{Online and strategic prices (Section~\ref{sec:online}).}
-Deterministic online fair settlement has competitive ratio exactly $g$;
-randomization does not help against realized lifetime floors, but once
-floors are static and public the residual problem is one-way search with
-deterministic price $\Theta(\sqrt g)$ and randomized price
-$\Theta(\log g)$. The first-price game's individual restriction is smooth
-(coarse-correlated price of anarchy $\le e/(e-1)$); a contamination game
-prices manipulation of the benchmark, with a sharp participation
-threshold and a rate-limit ``ramp tax.''
-\end{enumerate}
-
-We also locate the complexity of fair winner determination: it is
-NP-hard but fixed-parameter tractable in the number of directed asset
-pairs. Several results expose a recurring phenomenon---the no-numeraire
-constraint \emph{removes deviations}---and a single geometric hard family
-that governs both informational and incentive prices.
-Section~\ref{sec:empirics} calibrates the spread against a deployment
-trace, showing it is observable and economically large; the worst-case
-theory is independent of those measurements.
+The paper has three main acts. \emph{Act I} asks how much welfare the
+fairness filter can cost. The answer is exact:
+$\PoF(\theta,g)=\min(g,1/\theta)$, with a coverage refinement
+$\min(g,\alpha+(1-\alpha)/\theta)$; the proof identifies a
+repair/drop indifference point rather than a large-batch extremum.
+\emph{Act II} asks when the filter is a genuine equilibrium object. The
+answer is a sharp structural threshold: efficient UDP/Walrasian support
+exists for every instance iff $g=1$, and the filter is the
+singleton-coalition core constraint; here the no-numeraire constraint
+removes, rather than creates, deviations. \emph{Act III} asks what
+truthfulness costs once impossibility forces public historical floors.
+The answer is $\Theta(1+\log g)$, proved through a one-sided
+downward-IC envelope and matching geometric menus. Complexity,
+deployment calibration, online behavior, and benchmark manipulation are
+then treated as companion results showing the same spread parameter
+continues to govern the design beyond the three flagship theorems.
 Table~\ref{tab:summary} collects the quantitative results.
 
 \begin{table}[t]
@@ -278,7 +223,12 @@ Sections~\ref{sec:pof}--\ref{sec:incentives} (our constructions use
 distinct pairs) and reappears as the source of fixed-parameter
 tractability. Full proofs of all numbered results are in the appendix.
 
-\section{The Exact Price of Fairness}\label{sec:pof}
+\section{Act I: The Price of Fairness}\label{sec:pof}
+
+The first price is informational: once the benchmark floors are fixed by
+standalone competition, how much welfare can the componentwise fairness
+filter destroy?  The answer is governed exactly by $g$ and liquidity
+$\theta$.
 
 \begin{theorem}[Price of fairness, exact]\label{thm:pof}
 For every $\theta\in[0,1]$ and $g\ge1$, over all instances with liquidity
@@ -305,18 +255,20 @@ extreme asymmetry, not maximal complementarity.\hfill$\square$
 \end{proof}
 
 \begin{corollary}[Dichotomy]\label{cor:dichotomy}
-At the endpoints $\PoF\in\{g,1\}$: the pure no-numeraire auction
-($\theta=0$) pays the full factor $g$, while any numeraire ($\theta=1$)
-removes the fairness cost entirely.
+At the endpoints, the pure no-numeraire auction pays the full factor
+$g$, while a full numeraire removes the fairness cost entirely.
 \end{corollary}
 
 A natural attempt to add a third parameter fails, and identifies the
 right one.
 
 \begin{proposition}[Batch size is not the parameter]\label{prop:dirrel}
-With $\PoF(\theta,g,d)$ the price restricted to bids covering at most $d$
-orders, $\PoF(\theta,g,1)=1$ and $\PoF(\theta,g,d)=\min(g,1/\theta)$ for
-every $d\ge2$.
+With $\PoF(\theta,g,d)$ the price restricted to bids covering at most
+$d$ orders,
+\[
+  \PoF(\theta,g,1)=1,\qquad
+  \PoF(\theta,g,d)=\min(g,1/\theta)\quad(d\ge2).
+\]
 \end{proposition}
 
 Say an instance has \emph{coverage} $\alpha\in[0,1]$ if every bid
@@ -339,7 +291,11 @@ delivered deficit: the price of fairness prices the worst starved leg,
 discounted by liquidity. The endpoint $\alpha=1$ is exactly the
 componentwise filter-passing under which fairness is free.
 
-\section{Equilibrium Existence and the Core}\label{sec:walras}
+\section{Act II: The Structural Threshold}\label{sec:walras}
+
+The second question is structural. When does the same filter coincide
+with a competitive equilibrium or a cooperative stability notion rather
+than merely a feasibility rule? Here $g=1$ is the threshold.
 
 We work in the order-price abstraction of UDP: a directed-rate system
 induces order-level obligations $w_j\ge0$ that any solver serving $j$
@@ -408,7 +364,12 @@ UDP forces one bid per pair, so $2^{O(P)}\cdot\mathrm{poly}$ suffices.
 The deployment cap on pairs per batch thus makes the problem tractable in
 exactly the deployed regime.
 
-\section{The Price of Strategyproofness}\label{sec:incentives}
+\section{Act III: The Incentive Price}\label{sec:incentives}
+
+The third price is strategic. Truthfulness is not studied under the
+original endogenous benchmark, because the preceding structure creates a
+trilemma: current-report floors, ex-post fairness, and VCG-style
+strategyproofness cannot coexist without transfers.
 
 Two impossibilities pin down the regime. First, with \emph{endogenous}
 floors---computed from the current reports---no fair mechanism can be
@@ -477,79 +438,13 @@ serial-demand format.
 \end{theorem}
 
 The barrier is proved by a \emph{symmetrized swarm}: all identities share
-the same public geometry $\{\{o_i\},G\}$, differing only in private
-values, so no report-independent order can tell the batcher from the
-blockers; a telescoping identity
-$\sum_i(1-q_i)\prod_{s\prec i}q_s=1-\prod_sq_s\le1$ then places the
-batcher behind an expected blocker.
-
-\section{Online and Strategic Prices}\label{sec:online}
-
-In a lifetime-scoped benchmark model (orders have lifetimes; floors are
-benchmarked within them), settle-at-deadline gives:
-
-\begin{proposition}[Deterministic online ratio]\label{prop:online}
-The deterministic online competitive ratio of fair settlement is exactly
-$g$.
-\end{proposition}
-
-\begin{theorem}[Two online prices]\label{thm:online}
-(i) Against realized lifetime floors with almost-sure fairness,
-randomization does not help: the competitive ratio is exactly $g$ (an
-exposed batch settled with positive probability is undercut by a later
-standalone bid). (ii) On static single-contention instances (public
-floors, fleeting pairwise-conflicting offers), the deterministic ratio is
-$\Theta(\sqrt g)$ and the randomized ratio is $\Theta(\log g)$, the
-latter by one-way search over the spread on the stopped welfare
-$q=V+C-C_S\in[C,gC]$. Ratio-threshold greedy mechanisms pay $\Omega(g)$:
-the swarm of Theorem~\ref{thm:multi} in online clothing.
-\end{theorem}
-
-The geometric-level hard family here is the same scale-free family that
-governs $R_g$ offline: one family prices both the informational and the
-incentive cost of the spread $g$.
-
-\paragraph{The strategic face.}
-For the first-price (pay-as-bid) game, measured in \emph{produced}
-welfare $\PW$ (the delivered objective is unboundedly manipulable), the
-individual-only restriction is smooth.
-
-\begin{theorem}[Individual competition is smooth]\label{thm:poa}
-In the per-order-decomposable individual-only game, every coarse
-correlated equilibrium has $\E[\PW]\ge(1-\tfrac1e)\OPT_{\mathrm{ind}}$,
-so its price of anarchy is at most $e/(e-1)$. The model-native
-ingredient is that floors make standing bids coincide with delivered
-prices, $c_j(b)=p_j(b)$, so the Syrgkanis--Tardos penalty lands under the
-original profile. Against the unrestricted optimum this gives
-$(1-1/e)\OPT/g$. A weak pure equilibrium realizes the lower bound $g$;
-the full-game price of anarchy is conjectured $\Theta(g)$, obstructed by
-\emph{latent batches} that execute only under the deviation.
-\end{theorem}
-
-\paragraph{Pricing manipulation.}
-Finally we price manipulation of the benchmark itself. On one directed
-pair with honest quantile benchmark $b^\ast$, an attacker of volume $v$
-injects contamination mass $a$ at convex cost
-$K(a)=\kappa_1a+\tfrac{\kappa_2}2a^2$, depressing the linearized
-benchmark by $\beta a$ with $\beta=1/(mf(b^\ast))$; the published
-benchmark falls by at most a factor $1-r$ per round (downward rate limit,
-instant recovery).
-
-\begin{theorem}[The contamination game]\label{thm:contam}
-A marginal injection cost $\kappa_1\ge v\beta$ deters contamination
-entirely; otherwise the optimal constant attack is
-$a^\ast=\min\{\bar a,(v\beta-\kappa_1)/\kappa_2\}$ with steady relative
-bias $\mu=\beta a^\ast/b^\ast$. The pointwise bound
-$b_t\ge b^\ast-\beta a_t$ makes bursts no better than the constant
-attack, and the rate limit is a pure \emph{ramp tax}: it leaves the
-steady state unchanged but taxes restarts through the finite ramp.
-Steady contamination feeds every floor-calibrated guarantee through
-$g\mapsto g/(1-\mu)$.
-\end{theorem}
-
-Detection only tempers intensity; deterrence is the cost floor's job.
-The slogan: fees deter, detection tempers, rate limits tax ramping but
-do not remove persistent bias.
+the same public geometry (all singletons plus the grand set), differing
+only in private values, so no report-independent order can tell the
+batcher from the blockers. The telescoping identity
+\[
+  \sum_i(1-q_i)\prod_{s\prec i}q_s=1-\prod_s q_s\le1
+\]
+then places the batcher behind an expected blocker.
 
 \section{Empirical Calibration from Deployment Data}\label{sec:empirics}
 
@@ -603,6 +498,60 @@ numeric values.
 \textbf{These are observable deployment diagnostics, not estimates of
 the structural complementarity factor $g$; the theory's worst-case
 bounds hold for whatever $g$ a deployment exhibits.}
+
+\section{Online and Robustness: When the Benchmark Moves}\label{sec:online}
+
+The remaining results ask what happens when the benchmark is temporal or
+strategic. They are not a fourth act; they explain why deployed systems
+replace current-report floors by historical, public, and rate-limited
+ones.
+
+\paragraph{Online floors.}
+With realized lifetime floors, online fairness can be attacked by a later
+standalone bid that raises a covered order's own floor.
+\begin{proposition}[Realized floors force a factor $g$]\label{prop:online}
+The deterministic online competitive ratio of fair settlement is exactly
+$g$.
+\end{proposition}
+\begin{theorem}[Two online prices]\label{thm:online}
+(i) Against realized lifetime floors with almost-sure fairness,
+randomization does not help: the competitive ratio is exactly $g$. (ii)
+With static public floors on single-contention instances, the residual
+problem is one-way search over the spread, with deterministic ratio
+$\Theta(\sqrt g)$ and randomized ratio $\Theta(\log g)$; ratio-threshold
+greedy mechanisms still pay $\Omega(g)$.
+\end{theorem}
+Thus the online theorem supplies the operational reason for Act III's
+exogenous-benchmark regime.
+
+\paragraph{Strategic play.}
+For the first-price game, measured in produced welfare $\PW$ rather than
+delivered welfare, the individual-only restriction is smooth:
+\begin{theorem}[Individual competition is smooth]\label{thm:poa}
+Every coarse correlated equilibrium of the per-order-decomposable
+individual-only game has
+$\E[\PW]\ge(1-\tfrac1e)\OPT_{\mathrm{ind}}$, hence price of anarchy at
+most $e/(e-1)$ relative to $\OPT_{\mathrm{ind}}$ and at most $g/(1-1/e)$
+relative to the unrestricted optimum. The full-game price of anarchy is
+conjectured $\Theta(g)$; the obstruction is latent batches that execute
+only under a deviation.
+\end{theorem}
+
+\paragraph{Benchmark robustness.}
+On one directed pair, let an attacker of volume $v$ depress a quantile
+benchmark by injecting mass $a$ at convex cost
+$K(a)=\kappa_1a+\tfrac{\kappa_2}2a^2$, with local sensitivity $\beta$.
+\begin{theorem}[The contamination game]\label{thm:contam}
+A marginal injection cost $\kappa_1\ge v\beta$ deters contamination.
+Otherwise the optimal steady attack is
+$a^\ast=\min\{\bar a,(v\beta-\kappa_1)/\kappa_2\}$, inducing relative
+bias $\mu=\beta a^\ast/b^\ast$; bursts do not beat the constant attack,
+and rate limits tax restarts through a finite ramp without changing the
+steady state. Every floor-calibrated guarantee is then read with
+$g\mapsto g/(1-\mu)$.
+\end{theorem}
+Fees deter, detection tempers, and rate limits tax ramping; persistent
+bias is removed only by a sufficient cost floor.
 
 \section{Conclusion}\label{sec:conclusion}
 
