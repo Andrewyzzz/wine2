@@ -233,21 +233,17 @@ provide related strategic context~\cite{ma2025}.
 \section{Model}\label{sec:model}
 
 There are $n$ trade intents (\emph{orders}) and a set of \emph{solvers}.
-A solver $i$ submits bids: an \emph{individual} bid on a single order, or
-a \emph{batched} bid $(i,S,y)$ specifying a set $S$ of orders and, for
-each $j\in S$, a delivered value $v_j$ in $j$'s requested asset. The
-solver's value for the batch is $V_i(S)=\sum_{j\in S}v_j$ when it
-executes; production is asset-specific, so absent conversion a winner
-delivers $w_j\le v_j$ to each $j\in S$ \emph{in asset $a_j$} and cannot
-move value across assets or traders. There are no monetary transfers---
-the structural element absent from classical combinatorial auctions.
-The quantities $v_j$ and $w_j$ are measured in the trader-normalized
-score units induced by order $j$'s requested asset (the units used by the
-settlement rule to compare delivered outcomes for that order). Thus
-$W=\sum_j w_j$ is an additive objective over normalized delivered
-scores, not a transferable monetary surplus; the no-numeraire constraint
-is precisely that these scores cannot be redistributed across traders as
-cash payments.
+A solver $i$ has private \emph{deliverable values} $v_{i,j}\ge0$ for
+orders: the best outcome it can produce for trader $j$, in $j$'s
+requested asset and normalized score units. Its batch value is
+$V_i(S)=\sum_{j\in S}v_{i,j}$, realized only if the batch executes. A
+winning bid delivers $w_j\le v_{i,j}$ to each covered order; the solver's
+profit is the retained value $V_i(S)-\sum_{j\in S}w_j$, kept in the
+produced assets rather than transferred across traders. Reports are
+\emph{binding}: a solver cannot claim value it cannot deliver, so the
+strategic misreports relevant for our posted models are downward. Welfare
+$W=\sum_j w_j$ is an additive social objective over trader-normalized
+delivered scores, not a transferable monetary surplus.
 
 \begin{definition}[Complementarity factor]\label{def:g}
 The instance has complementarity factor $g\ge1$ if
@@ -478,7 +474,11 @@ overlap geometry.
 \paragraph{Complexity.}
 Fair winner determination is NP-hard (from 3-dimensional matching) but
 fixed-parameter tractable in the number $P$ of directed asset pairs:
-UDP forces one bid per pair, so $2^{O(P)}\cdot\mathrm{poly}$ suffices.
+UDP contracts each directed pair to an atomic item, and every fair bid is
+a weighted subset of the $P$ atoms. Dynamic programming over pair masks
+(or equivalently weighted set packing on $P$ items) tries
+$2^P$ states and scans the bid list in each state, giving
+$2^{O(P)}\cdot\mathrm{poly}(|\mathcal B|)$.
 The deployment cap on pairs per batch thus makes the problem tractable in
 exactly the deployed regime. This is another way in which $g$ and the
 token-pair graph play complementary roles: $g$ controls the loss from
@@ -560,6 +560,18 @@ so $u'(V)\ge x(V)$ a.e.; the scale-free integral forces logarithmic loss.
 The deterministic optimum balances the two errors at threshold $\sqrt g$.
 Random geometric posted levels give the matching upper bound up to
 constants. Two mechanisms lift the guarantee to the full game.
+
+\paragraph{Mechanism model.}
+In the exogenous-benchmark regime the floors $c_j$ are public. A
+solver's feasible options and their floor masses $C_S=\sum_{j\in S}c_j$
+are public; only its values $V_S$ are private. The mechanisms below are
+posted: prices and eligibility depend only on public data and a public
+random seed, and each solver responds by demanding a disjoint collection
+of options rather than reporting values. The mechanism honors demand only
+when the solver delivers the floors to every covered order. Universal
+truthfulness is in this posted-demand sense: for every seed, demanding a
+utility-maximizing executable collection is dominant because the menu is
+independent of that solver's behavior.
 
 \begin{theorem}[Two routes to $\Theta(1+\log g)$]\label{thm:lift}
 (i) For arbitrarily many single-minded solvers with public floors, an
@@ -669,54 +681,23 @@ bias is removed only by a sufficient cost floor.
 
 \section{Empirical Calibration}\label{sec:empirics}
 
-\paragraph{Scale.}
 An anonymized supplementary deployment trace contains 802,816
-post-adoption solver competitions over eight months. On the
-USD-covered sane-volume subsample, the trace reports \$54.69B of
-covered notional and a \$5.13M visible accounting gap, about 0.94 bps.
-These numbers are not used to prove any theorem; they show that the
-benchmark and spread parameters are operational rather than formal.
-
-The trace also makes the algorithmic parameter $P$ observable: each
-intent names a directed requested/paid asset pair, so the number of
-directed pairs touched by a batch or a window can be read directly from
-the orders. This is not an estimate of $g$; it is the public support size
-that appears in the fixed-parameter winner-determination result.
-
-\paragraph{Visible coverage and spread.}
-For an auction $a$, let $Score_{1,a}$ be the winning solution score and
-let $Score^{\mathrm{other}}_{2,a}$ be the best positive score submitted
-by a different solver. We calibrate the auction-level observable
-\[
-  \widehat\alpha^{\mathrm{obs}}_a
-  = \frac{Score^{\mathrm{other}}_{2,a}}{Score_{1,a}},
-  \qquad
-  \widehat G^{\mathrm{obs}}_a
-  = \frac{1}{\widehat\alpha^{\mathrm{obs}}_a}.
-\]
-This is a visible benchmark-coverage diagnostic, not the per-leg
-coverage parameter in Theorem~\ref{thm:coverage}; it uses only the
-winner and best non-winning solver scores observable in the trace.
-Likewise, $\widehat G^{\mathrm{obs}}$ is a visible spread, not the
-structural complementarity factor. The trace reports
-$\widehat G^{\mathrm{obs}}>2$ in 25.3\% of auctions and
-$\widehat G^{\mathrm{obs}}>4$ in 20.2\%; among small-notional auctions,
-the share with $\widehat G^{\mathrm{obs}}>2$ is 63.1\%. Thus the spread
-phenomenon is not confined to worst-case constructions.
-As $g\to1$ the bound collapses to $1$ (fairness becomes free), while the
-visible-spread tail shows where non-trivial $g$ is operationally relevant.
+post-adoption solver competitions over eight months. On the sane-volume
+USD subsample, the trace reports \$54.69B of covered notional and a
+\$5.13M visible accounting gap, about 0.94 bps. The visible spread is
+nontrivial in the tail: $\widehat G^{\mathrm{obs}}>2$ in 25.3\% of
+auctions, $\widehat G^{\mathrm{obs}}>4$ in 20.2\%, and
+$\widehat G^{\mathrm{obs}}>2$ in 63.1\% of small-notional auctions. The
+supplement defines the score variables, filters, and replay diagnostics.
 The point is not to estimate structural $g$. The bounds are design
 guardrails: they say what happens if flow drifts toward high-complementarity
 or thin-liquidity assets, exactly where the small-notional tail is
 largest. They also remain relevant under manipulation, since benchmark
 contamination feeds back as $g\mapsto g/(1-\mu)$.
-
-\paragraph{Benchmark robustness.}
-The same trace motivates the contamination model: under a naive local
-hard-reserve benchmark, 97.1\% of auction-weighted cell-windows are
-vulnerable in the supplementary diagnostic. We use this only as a design
-signal for delayed, quantile-based, rate-limited, and inherited
-benchmarks; the contamination parameters remain model primitives.
+The same trace makes $P$ observable and motivates benchmark robustness:
+under a naive local hard-reserve benchmark, 97.1\% of auction-weighted
+cell-windows are vulnerable, a design signal for inherited,
+quantile-based, delayed, and rate-limited benchmarks.
 
 \textbf{These are observable deployment diagnostics, not estimates of
 the structural complementarity factor $g$; the theory's worst-case

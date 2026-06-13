@@ -133,10 +133,13 @@ value already attained.\hfill$\square$
 NP-hardness is a reduction from 3-dimensional matching: orders are
 ground elements, batched bids are triples of value $1$, and a fair
 welfare-$n$ allocation exists iff a perfect matching does. For
-fixed-parameter tractability, UDP forces all orders on a directed pair
-into one winning bid, so a solution is a choice of one bid per pair;
-enumerating over $2^{O(P)}$ pair-assignments and solving each in
-polynomial time gives $2^{O(P)}\cdot\mathrm{poly}$.
+fixed-parameter tractability, UDP contracts each directed pair to an
+atomic item. After fair filtering, every surviving bid is a weighted
+subset of the $P$ atoms, and winner determination is weighted set packing
+on a universe of size $P$. The dynamic program
+$DP[M]=\max\{DP[M\setminus T_b]+w_b:b\text{ uses }T_b\subseteq M\}$
+over masks $M\subseteq[P]$ scans the bid list at each state, giving
+$2^{O(P)}\cdot\mathrm{poly}(|\mathcal B|)$.
 
 \section{Full Proofs for Section~\ref{sec:incentives}}
 
@@ -165,36 +168,43 @@ benchmark.\hfill$\square$
 \begin{proof}[Proof of Theorem~\ref{thm:posp}]
 \emph{Lower bound.} Restrict to the screening family $R_g$: a single
 strategic solver holds one batch of private value $V\in[1,g]$ (floor mass
-normalized to $1$, so $V=\gamma$), and the mechanism posts an outcome as
-a function of the reported $V$. Write $x(V)\in[0,1]$ for the probability
-the batch is executed and $p(V)$ for the expected delivered welfare;
-the solver's interim utility is $u(V)=V\,x(V)-p(V)$ (it keeps surplus
-only when executed). Because bids are binding, a type $V$ can only
-\emph{under}report (claim $V'\le V$), so incentive compatibility is the
-one-sided condition $u(V)\ge V x(V')-p(V')$ for all $V'\le V$. Standard
-manipulation gives, for $V'\le V$,
+normalized to $1$, so $\FAIR(V)=V$), and the mechanism posts an outcome
+as a function of the reported $V$. Write $p(V)$ for the probability the
+batch is executed and $x(V)$ for the expected batch delivery (zero when
+not executed). The fallback floor delivers welfare $1$, so
+$W(V)=x(V)+1-p(V)$, and the solver's interim utility is
+$u(V)=p(V)V-x(V)$. Because bids are binding, a type $V$ can only
+\emph{under}report (claim $V'\le V$), so incentive compatibility implies
 \[
-u(V)\ge u(V')+(V-V')x(V'),
+u(V)\ge u(V')+(V-V')p(V') \qquad (V'\le V).
 \]
-so $u$ is nondecreasing and, taking $V'\uparrow V$, $u'(V)\ge x(V)$
-almost everywhere (a one-sided envelope inequality; the two-sided Myerson
-identity fails because upward misreports are infeasible). The welfare
-delivered to the trader is $p(V)=Vx(V)-u(V)$, and fairness requires the
-mechanism, whenever it does not execute, to settle at the floor $1$;
-hence the expected welfare ratio against $\FAIR$ is controlled by how
-small $x$ can be while respecting $u'\ge x$ and $u(1)\ge 0$. Integrating
-the envelope inequality against the population of types weighted by the
-worst-case prior $dV/V^2$ on $[1,g]$,
+Thus $u$ is nondecreasing and $u'(V)\ge p(V)$ a.e. Hence
+$u(V)\ge\int_1^V p(t)\,dt$ and
 \[
-\int_1^g \frac{x(V)}{V^2}\,dV
-\le \int_1^g \frac{u'(V)}{V^2}\,dV
-= \Big[\frac{u(V)}{V^2}\Big]_1^g + 2\int_1^g\frac{u(V)}{V^3}\,dV,
+x(V)=p(V)V-u(V)\le
+\psi(V):=p(V)V-\int_1^V p(t)\,dt .
 \]
-and bounding $u(V)\le V-1$ (no mechanism can give the solver more than
-its full surplus) together with Fubini yields
-$\E[\text{welfare}]\le \big(1-\tfrac{g\ln g}{2(g-1)}\big)\OPT$ for every
-randomized DSIC mechanism, i.e. a price of strategyproofness at least
-$\frac{g\ln g}{2(g-1)}\ge\frac{\ln g}{2}$.
+Integrating $\psi(V)/V^2$ over $[1,g]$ and applying Fubini gives
+\[
+\int_1^g\frac{\psi(V)}{V^2}\,dV
+=\int_1^g\frac{p(V)}{V}\,dV
+-\int_1^g p(t)\Big(\frac1t-\frac1g\Big)\,dt
+=\frac1g\int_1^g p(t)\,dt
+\le\frac{g-1}{g}.
+\]
+If the mechanism has competitive ratio $r$, i.e. $W(V)\ge V/r$
+pointwise, then $x(V)\ge V/r-(1-p(V))\ge V/r-1$, and
+\[
+\int_1^g \frac{V/r-1}{V^2}\,dV
+=\frac{\ln g}{r}-\Big(1-\frac1g\Big).
+\]
+Combining the two inequalities,
+$(\ln g)/r\le2(1-1/g)$, so every randomized DSIC mechanism has
+\[
+r=\sup_{V\in[1,g]}\frac{V}{W(V)}
+\ge\frac{g\ln g}{2(g-1)}
+\ge\frac{\ln g}{2}.
+\]
 
 \emph{Posted-price upper bound.} Offer the batch a take-it-or-leave-it
 delivered welfare on the geometric ladder $\{e^k:0\le k\le K\}$,

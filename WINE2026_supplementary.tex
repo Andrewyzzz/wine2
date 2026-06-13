@@ -11,6 +11,7 @@ No-Numeraire Combinatorial Trade-Intent Auctions}}
 \date{}
 
 \begin{document}
+\setlength{\emergencystretch}{3em}
 \maketitle
 
 \noindent
@@ -42,7 +43,7 @@ Visible accounting gap (relative) & $\approx 0.94$ bps \\
 \end{tabular}
 \caption{Scale of the deployment trace. The visible accounting gap is the
 aggregate difference between the winning solution's score and the best
-non-winning visible score.}
+non-winning visible score on the sane-volume USD subsample.}
 \end{table}
 
 \section*{S2. Visible coverage / spread distribution}
@@ -52,10 +53,12 @@ and $\mathrm{Score}^{\mathrm{other}}_2$ the best positive score submitted
 by a different solver. Define the observable
 \[
 \widehat\alpha^{\mathrm{obs}}
-=\frac{\mathrm{Score}^{\mathrm{other}}_2}{\mathrm{Score}_1}\in(0,1],
+=\frac{\mathrm{Score}^{\mathrm{other}}_2}{\mathrm{Score}_1}\in[0,1],
 \qquad
-\widehat G^{\mathrm{obs}}=1/\widehat\alpha^{\mathrm{obs}}\ge1 .
+\widehat G^{\mathrm{obs}}=1/\widehat\alpha^{\mathrm{obs}}\ge1 ,
 \]
+with $\widehat G^{\mathrm{obs}}=\infty$ when
+$\widehat\alpha^{\mathrm{obs}}=0$.
 This is an \emph{auction-level} visible coverage; it is a proxy for, and
 weaker than, the per-leg coverage parameter of the submission's
 coverage law, which would require per-leg standalone benchmarks.
@@ -98,14 +101,81 @@ parameters and robust-reserve configuration are in the accompanying
 scripts.}
 \end{table}
 
-\section*{S4. Reproduction}
+\section*{S4. Reproducibility note}
 
-The accompanying archive contains: (i) the processed per-auction records
-underlying Tables~S1--S3; (ii) the scripts that compute the visible
-coverage distribution and the accounting gap; and (iii) the
-shadow-reserve replay used for the robustness diagnostic, with its
-configuration file. All identifying metadata (author, affiliation,
-project, and protocol-internal identifiers beyond what is needed to
-interpret the tables) has been removed.
+All figures below are computed from an anonymized deployment trace of
+post-CIP-67 solver competitions. Identifying metadata is removed, and the
+computation scripts are included in the accompanying anonymized archive.
+
+\paragraph{Sample.}
+The main sample contains 802,816 mainnet solver competitions from June 1,
+2025 through January 31, 2026. The parser retains protocol-valid,
+non-filtered, positive-score solver submissions. Full-sample quantities
+such as visible spread and effective solver count use all parsed auctions.
+USD-denominated quantities use smaller denominators: 680,839
+score-to-USD observations, 493,653 notional-covered observations, and
+318,469 sane-volume observations with $\mathrm{volume\_usd}\in[1,10^7]$.
+These denominator changes are intentional coverage restrictions, not
+inconsistencies.
+
+\paragraph{Score variables.}
+For each competition, $\mathrm{Score}_1$ is the winning solution score.
+The reference score $\mathrm{Score}^{\mathrm{other}}_2$ is the best
+positive score submitted by a solver different from the winner. The
+parser groups by solver identity, removes all candidate solutions
+submitted by the winning solver, and then takes the maximum remaining
+positive valid score; if none exists, the reference score is zero. This
+best-non-winning-solver construction differs from a raw second-solution
+parser on 11.8\% of auctions, and 15.2\% of retained auctions have no
+positive non-winning solver score.
+
+\paragraph{Visible spread.}
+The visible spread is
+\[
+\widehat G^{\mathrm{obs}}
+=\frac{\mathrm{Score}_1}{\mathrm{Score}^{\mathrm{other}}_2},
+\]
+with infinite spread when the best non-winning solver score is zero. The
+reported tail shares are computed on the full 802,816-auction sample:
+$\widehat G^{\mathrm{obs}}>2$ in 25.3\% of auctions and
+$\widehat G^{\mathrm{obs}}>4$ in 20.2\%. The small-notional segment is
+the bottom size bucket produced by the score-winner quantile rule
+$(0,0.25,0.75,0.90,1.0)$; it contains 200,704 auctions and has
+$\widehat G^{\mathrm{obs}}>2$ in 63.1\%.
+
+\paragraph{Accounting gap.}
+The score difference is converted to dollars using ETH/USD prices:
+\[
+\mathrm{ScoreDiffUSD}
+=\frac{\mathrm{Score}_1-\mathrm{Score}^{\mathrm{other}}_2}{10^{18}}
+\cdot \mathrm{ETHUSD}.
+\]
+The reported \$5.13M aggregate winsorizes this dollar gap at the first
+and ninety-ninth percentiles and sums over the sane-volume denominator
+above. The \$54.69B covered notional is the sell-token notional over the
+same denominator, and the 0.94 bps figure is
+$10^4$ times aggregate gap divided by covered notional.
+
+\paragraph{Reserve-vulnerability diagnostic.}
+The benchmark diagnostic uses cell-windows from the reserve-construction
+pipeline. With baseline quantile $\tau=0.25$, a cell-window is marked
+vulnerable if the maximum eligible-sample share of any single solver is
+at least $\tau$, meaning that a single solver could potentially influence
+the local reserve quantile if its samples were contaminated. The
+diagnostic contains 91,390 cell-windows; 99.6\% are vulnerable
+unweighted, and 97.1\% are vulnerable after auction-weighting. The
+corresponding design implication is to inherit from parent cells or use
+audit-only/soft reserves when local support is sparse.
+
+\paragraph{Scripts.}
+The archive includes the parser and metric construction scripts
+\texttt{build\_dataset.py}, \texttt{add\_usd\_prices.py}, and
+\texttt{fragility.py}; validation scripts including
+\texttt{sample\_flow.py}, \texttt{usd\_missingness.py},
+\texttt{reference\_score\_validation.py}, and the reserve-vulnerability
+diagnostic; and table-generation scripts producing the summary CSV and
+\LaTeX{} tables. Large per-auction parquet files are represented in the
+submission archive by anonymized processed records or deterministic CSV
+summaries, depending on upload-size constraints.
 
 \end{document}
