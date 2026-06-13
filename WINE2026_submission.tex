@@ -108,29 +108,23 @@ $\theta$---controls a remarkably wide range of worst-case quantities,
 which is what gives the design a unified analysis rather than a
 collection of unrelated bounds.
 
-The role of $g$ is deliberately worst-case. We do not assume that a
-deployment knows, estimates, or optimizes over the structural
-complementarity of every batch. Instead, each theorem says: conditional
-on whatever spread the deployment exhibits, this is the maximum price of
-the corresponding design requirement. That is why the empirical section
-uses observable diagnostics only to show that the relevant spreads and
-supports are real in deployment; it does not need to estimate the
-structural $g$ for the theorems to apply.
+The role of $g$ is deliberately worst-case: the theorems do not require a
+deployment to estimate the structural complementarity of every batch.
+The empirical section only shows that the corresponding observable
+spreads and supports are real in deployment.
 
 \paragraph{Contributions.}
-We organize the theory around a single structural quantity and ask, for
-each of three design requirements, what price it carries---each answered
-in terms of the same $g$ (with liquidity $\theta$). The main results are
-Theorems~\ref{thm:pof}--\ref{prop:walras} (the exact fairness, coverage,
-and equilibrium frontiers); the same spread parameter then governs
-incentives, online behavior, and benchmark manipulation.
+We ask what price three design requirements carry, each answered in terms
+of the same $g$ (with liquidity $\theta$). The main results are
+Theorems~\ref{thm:pof}--\ref{prop:walras}; the same spread parameter then
+governs incentives, online behavior, and benchmark manipulation.
 \begin{enumerate}[leftmargin=*,itemsep=2pt]
 \item \textbf{Price of fairness (Section~\ref{sec:pof}).} The welfare
 ratio between the unconstrained optimum and the best fair outcome is
 exactly $\min(g,1/\theta)$, tight and independent of order count and of
 prices, with the no-numeraire/numeraire dichotomy $\{g,1\}$. The binding
-instance is an asymmetry at the repair/drop indifference point, not
-maximal complementarity; batch size is not the parameter, and under a
+instance is an asymmetry at the repair/drop indifference point; batch
+size is not the parameter, and under a
 per-leg coverage floor $\alpha$ the law is
 $\min(g,\alpha+(1-\alpha)/\theta)$.
 
@@ -141,7 +135,7 @@ proved natively; at the trader-optimal equilibrium the obligations are
 exactly the fairness floors. The deployed filter is precisely the
 singleton-coalition core constraint, the individual allocation always
 lies in the multiplicative $g$-core (tight), and the no-numeraire core can
-be nonempty where the transferable core is empty.
+be nonempty even when the transferable core is empty.
 
 \item \textbf{Price of strategyproofness (Section~\ref{sec:incentives}).}
 Two impossibilities pin down the regime: best-bid fairness conflicts with
@@ -154,9 +148,9 @@ public, $g$-calibrated historical floor. In that exogenous-benchmark
 regime the price of strategyproofness is $\Theta(1+\log g)$---for many
 single-minded solvers and for one multi-minded solver---via an
 eligibility-posted packing mechanism and a coupled-menu mechanism with a
-convex profit-curve argument; independent option pricing instead pays
+convex profit-curve argument; independent option pricing pays
 $\Omega(g/\log^2 g)$, and the multi-agent multi-minded cell is pinned
-between $O(N\log g)$ and an $\Omega(\min(N,g))$ serial-demand barrier.
+between $O(N\log g)$ and an $\Omega(\min(N,g))$ barrier.
 
 \item \textbf{Online and strategic prices (Section~\ref{sec:online}).}
 Deterministic online fair settlement has competitive ratio exactly $g$;
@@ -169,11 +163,10 @@ benchmark manipulation with a sharp participation threshold and a
 rate-limit ramp tax.
 \end{enumerate}
 
-We also locate the complexity of fair winner determination: NP-hard but
-fixed-parameter tractable in the number of directed asset pairs.
-Section~\ref{sec:empirics} calibrates the spread against a deployment
-trace, showing it is observable and economically large; the worst-case
-theory is independent of those measurements.
+Fair winner determination is NP-hard but fixed-parameter tractable in the
+number of directed asset pairs. Section~\ref{sec:empirics} calibrates
+observable deployment diagnostics; the worst-case theory is independent
+of those measurements.
 Table~\ref{tab:summary} collects the quantitative results.
 
 \begin{table}[t]
@@ -614,18 +607,15 @@ dependence on $N$ while keeping the logarithmic dependence on $g$.
 
 \section{Online and Robustness}\label{sec:online}
 
-The remaining results ask what happens when the benchmark is temporal or
-strategic. They are not a fourth act; they explain why deployed systems
-replace current-report floors by historical, public, and rate-limited
-ones.
+The remaining results explain why deployed systems replace current-report
+floors by historical, public, and rate-limited ones.
 
 \paragraph{Online floors.}
 With realized lifetime floors, online fairness can be attacked by a later
 standalone bid that raises a covered order's own floor. This is the
 online analogue of the endogenous-benchmark impossibility in
-Section~\ref{sec:incentives}: the solver is not merely competing against
-future value, but against a future revision of the fairness constraint
-itself.
+Section~\ref{sec:incentives}: the solver competes against a future
+revision of the fairness constraint itself.
 \begin{proposition}[Realized floors force a factor $g$]\label{prop:online}
 The deterministic online competitive ratio of fair settlement is exactly
 $g$.
@@ -638,11 +628,9 @@ problem is one-way search over the spread, with deterministic ratio
 $\Theta(\sqrt g)$ and randomized ratio $\Theta(\log g)$; ratio-threshold
 greedy mechanisms still pay $\Omega(g)$.
 \end{theorem}
-Thus the online theorem supplies the operational reason for the
-exogenous-benchmark regime in Section~\ref{sec:incentives}. Once floors
-are fixed, the residual problem is one-way search over an interval of
-width $g$, but the searched quantity is stopped welfare rather than an
-exchange rate.
+Thus Theorem~\ref{thm:online} is the operational reason for the
+exogenous-benchmark regime in Section~\ref{sec:incentives}; once floors
+are fixed, the residual problem is one-way search over width $g$.
 
 \paragraph{Strategic play.}
 For the first-price game, measured in produced welfare $\PW$ rather than
@@ -680,9 +668,8 @@ An anonymized supplementary deployment trace contains 802,816
 post-adoption solver competitions over eight months. On the
 USD-covered sane-volume subsample, the trace reports \$54.69B of
 covered notional and a \$5.13M visible accounting gap, about 0.94 bps.
-These scale numbers are not used to prove any theorem; they explain why
-the benchmark and spread parameters are operational rather than merely
-formal.
+These numbers are not used to prove any theorem; they show that the
+benchmark and spread parameters are operational rather than formal.
 
 The trace also makes the algorithmic parameter $P$ observable: each
 intent names a directed requested/paid asset pair, so the number of
@@ -710,23 +697,15 @@ $\widehat G^{\mathrm{obs}}>2$ in 25.3\% of auctions and
 $\widehat G^{\mathrm{obs}}>4$ in 20.2\%; among small-notional auctions,
 the share with $\widehat G^{\mathrm{obs}}>2$ is 63.1\%. Thus the spread
 phenomenon is not confined to worst-case constructions.
-This also answers how tightly $\min(g,1/\theta)$ binds on realistic
-instances: as $g\to1$ the bound collapses to $1$ (fairness becomes free,
-the common case for liquid pairs), while the heavy right tail of the
-visible spread---driven by thin-liquidity long-tail assets, where shallow
-visible depth mechanically widens the spread---shows that non-trivial $g$,
-and hence a bound bounded away from $1$, is exactly where small-notional
-orders live.
+As $g\to1$ the bound collapses to $1$ (fairness becomes free), while the
+visible-spread tail shows where non-trivial $g$ is operationally relevant.
 
 \paragraph{Benchmark robustness.}
-The same trace also motivates the contamination model. Under a naive
-local hard-reserve benchmark, 97.1\% of auction-weighted cell-windows
-are vulnerable in the supplementary diagnostic. We use this number only
-as a design signal: local benchmarks should be delayed, quantile-based,
-rate-limited, and inherited from coarser parent cells when local support
-is thin. The theoretical parameters in the contamination game remain
-model primitives; the deployment trace is not used to estimate their
-numeric values.
+The same trace motivates the contamination model: under a naive local
+hard-reserve benchmark, 97.1\% of auction-weighted cell-windows are
+vulnerable in the supplementary diagnostic. We use this only as a design
+signal for delayed, quantile-based, rate-limited, and inherited
+benchmarks; the contamination parameters remain model primitives.
 
 \textbf{These are observable deployment diagnostics, not estimates of
 the structural complementarity factor $g$; the theory's worst-case
@@ -737,19 +716,15 @@ bounds hold for whatever $g$ a deployment exhibits.}
 A single invariant---the complementarity factor $g$, with liquidity
 $\theta$---governs the worst-case fairness, equilibrium, complexity,
 incentive, online, and manipulation prices of the no-numeraire fair
-combinatorial auction. Two phenomena recur: the no-numeraire constraint
-removes deviations (aiding equilibrium and the core but disabling VCG),
-and one geometric family prices both informational and incentive costs of
-the spread.
+combinatorial auction. Two phenomena recur: no-numeraire feasibility
+removes some deviations while disabling transfers, and one geometric
+family prices both informational and incentive costs of the spread.
 
-Two obstructions are named rather than hidden. The first is the
-\emph{latent-batch} obstruction in the full first-price game: a deviation
-can activate a batch that was absent under the original profile, breaking
-the usual smoothness charging scheme. The second is the
-\emph{serial-demand barrier}: every mechanism that serves multi-minded
-solvers through a report-independent order can be forced to lose
-$\Omega(\min(N,g))$. Removing either obstruction would require a new
-idea, not a tighter analysis of the present proofs.
+Two obstructions remain deliberately visible. The \emph{latent-batch}
+obstruction blocks full-game smoothness because deviations can activate
+batches absent under the original profile. The \emph{serial-demand
+barrier} shows that report-independent service orders can lose
+$\Omega(\min(N,g))$. Removing either seems to require a new idea.
 
 \bibliographystyle{splncs04}
 \bibliography{refs}
