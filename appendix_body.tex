@@ -52,7 +52,9 @@ $d=1$ only singletons exist, so $\OPT=\FAIR=C$.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:coverage}]
-\emph{Upper bound.} As above, coverage caps the deficit by
+\emph{Upper bound.} Write
+$\Gamma=\Gamma(\theta,\alpha):=\alpha+(1-\alpha)/\theta$, with the
+endpoint convention from the theorem. As above, coverage caps the deficit by
 $D\le(1-\alpha)C_S$. Repair is feasible when
 $\gamma-1\ge(1-\alpha)\frac{1-\theta}{\theta}=\Gamma-1$, and then
 $f=V-\frac{D(1-\theta)}{\theta}\ge V\big(1-\frac{(1-\alpha)(1-\theta)}
@@ -138,8 +140,30 @@ polynomial time gives $2^{O(P)}\cdot\mathrm{poly}$.
 
 \section{Act III Proofs: Strategyproofness}
 
+\begin{proof}[Proof of Theorem~\ref{thm:incompat}]
+Let there be one order. Solver $i$ has private deliverable value $v_i$
+and may report any binding value $r_i\le v_i$; over-reporting is excluded
+by settlement, while under-reporting is feasible. By non-wastefulness the
+order is allocated whenever some report is positive, and by
+value-respecting the winner has a maximal report. Feasibility implies the
+winner can deliver at most its true value. Best-bid fairness requires the
+delivery to be at least the endogenous benchmark $\max_i r_i$.
+
+Let the highest and second-highest true values be
+$v^{(1)}>v^{(2)}$. If the top solver reports truthfully, it sets the
+benchmark to $v^{(1)}$, must deliver $v^{(1)}$, and earns zero surplus.
+If instead it reports $r=v^{(2)}+\varepsilon$ with
+$0<\varepsilon<v^{(1)}-v^{(2)}$, it still has the maximal report, the
+benchmark falls to $v^{(2)}+\varepsilon$, and it can earn
+$v^{(1)}-v^{(2)}-\varepsilon>0$. Truthful reporting is therefore not a
+dominant strategy for any feasible non-wasteful value-respecting
+mechanism enforcing the best-bid benchmark. The same argument shows that
+any DSIC mechanism in this class can enforce at most the runner-up
+benchmark.\hfill$\square$
+\end{proof}
+
 \begin{proof}[Proof of Theorem~\ref{thm:posp}]
-\emph{Lower bound.} Restrict to the screening core $R_g$: a single
+\emph{Lower bound.} Restrict to the screening family $R_g$: a single
 strategic solver holds one batch of private value $V\in[1,g]$ (floor mass
 normalized to $1$, so $V=\gamma$), and the mechanism posts an outcome as
 a function of the reported $V$. Write $x(V)\in[0,1]$ for the probability

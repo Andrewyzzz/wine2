@@ -150,7 +150,7 @@ Price of fairness & $\min(g,1/\theta)$; endpoints $\{g,1\}$ & exact\\
 Walrasian/UDP existence & for all instances iff $g=1$ & exact\\
 Core & filter $=$ singleton-core; $g$-core nonempty, tight & exact\\
 Winner determination & NP-hard; FPT in directed pairs $P$ & ---\\
-Strategyproofness (core) & $\Theta(1+\log g)$; det.\ exactly $\sqrt g$ & asympt.\ tight\\
+Strategyproofness (screening) & $\Theta(1+\log g)$; det.\ exactly $\sqrt g$ & asympt.\ tight\\
 \quad single-/multi-minded & both $\Theta(1+\log g)$; indep.\ $\Omega(g/\log^2 g)$ & asympt.\ tight\\
 \quad multi-agent multi-minded & $O(N\log g)$ / serial $\Omega(\min(N,g))$ & partial\\
 Online (realized floors) & exactly $g$, even randomized & exact\\
@@ -306,13 +306,15 @@ satisfies $v_j\ge\alpha c_j$ on every covered order---no leg is worse
 than $\alpha$ times the benchmark, a per-leg routing-quality floor.
 
 \begin{theorem}[The coverage law]\label{thm:coverage}
-Over instances with liquidity $\theta$, complementarity at most $g$, and
+Write
+$\Gamma(\theta,\alpha):=\alpha+(1-\alpha)/\theta$, with
+$\Gamma(0,\alpha)=\infty$ for $\alpha<1$ and $\Gamma(0,1)=1$. Over
+instances with liquidity $\theta$, complementarity at most $g$, and
 coverage $\alpha$,
 \[
-\PoF(\theta,g,\alpha)=\min\!\Big(g,\ \alpha+\tfrac{1-\alpha}{\theta}\Big),
+\PoF(\theta,g,\alpha)=\min\!\big(g,\Gamma(\theta,\alpha)\big),
 \]
-with $\Gamma(0,\alpha)=\infty$ for $\alpha<1$ and $\Gamma(0,1)=1$; tight
-on two-order instances.
+tight on two-order instances.
 \end{theorem}
 
 The quantity $\Gamma-1=(1-\alpha)\cdot\frac{1-\theta}{\theta}$ is the
@@ -434,18 +436,31 @@ trilemma: current-report floors, ex-post fairness, and VCG-style
 strategyproofness cannot coexist without transfers.
 
 Two impossibilities pin down the regime. First, with \emph{endogenous}
-floors---computed from the current reports---no fair mechanism can be
-strategyproof while running VCG, because the no-numeraire constraint makes
-VCG's compensating transfers infeasible (Proposition~\ref{prop:core} and
-the absence of a numeraire). Second, online with realized lifetime floors,
-no fair mechanism beats ratio $g$ even with randomization
-(Theorem~\ref{thm:online}(i)): a solver settling a batch can be undercut
-by a later standalone bid that raises a covered order's own floor. Both
-failures trace to the same source---when the floor responds to current
-behavior, a solver can manipulate its own benchmark---so the natural and
-\emph{deployed} response is to fix floors from a public, $g$-calibrated
-historical window, severing that channel while preserving the spread
-$g$ as the operative parameter. We therefore analyze this
+floors---computed from the current reports---VCG-style compensation is
+infeasible because the no-numeraire constraint gives no asset in which to
+make the Clarke payment. More sharply, best-bid fairness and dominant
+strategy truthfulness already conflict on one order:
+
+\begin{theorem}[Best-bid fairness is incompatible with strategyproofness]
+\label{thm:incompat}
+Call a mechanism \emph{non-wasteful} if it allocates an order whenever
+some reported standalone value is positive, and \emph{value-respecting}
+if it allocates to a solver with maximal reported value. No feasible,
+non-wasteful, value-respecting, DSIC mechanism guarantees fairness at the
+endogenous best-bid benchmark $c_j=\max_i r_{ij}$. This holds already for
+one order. Under DSIC, the enforceable benchmark collapses to the
+runner-up level.
+\end{theorem}
+
+Second, as Section~\ref{sec:online} proves, online with realized lifetime
+floors admits no fair mechanism better than ratio $g$, even randomized:
+a solver settling a batch can be undercut by a later standalone bid that
+raises a covered order's own floor. Both failures trace to the same
+source---when the floor responds to current behavior, a solver can
+manipulate its own benchmark---so the natural and \emph{deployed}
+response is to fix floors from a public, $g$-calibrated historical
+window, severing that channel while preserving the spread $g$ as the
+operative parameter. We therefore analyze this
 exogenous-benchmark regime; the price of strategyproofness $\mathrm{PoSP}$
 is the welfare ratio between $\FAIR$ and the best universally truthful
 fair mechanism, and solvers are single- or multi-minded with private
@@ -467,10 +482,11 @@ one-sidedness is weaker than Myerson's identity but still strong enough
 to force a logarithmic screening loss over the multiplicative interval
 $[1,g]$.
 
-The core of the regime is already nontrivial for one strategic solver:
+The canonical screening family of the regime is already nontrivial for
+one strategic solver:
 
-\begin{theorem}[Core characterization]\label{thm:posp}
-Over the screening core $R_g$ (one strategic solver, public floors),
+\begin{theorem}[Canonical screening family]\label{thm:posp}
+Over the screening family $R_g$ (one strategic solver, public floors),
 the price of strategyproofness is $\Theta(1+\log g)$: every randomized
 DSIC mechanism pays at least $\frac{g\ln g}{2(g-1)}\ge\frac{\ln g}{2}$,
 a geometric posted-price mechanism achieves $e(\lceil\ln g\rceil+1)$,
@@ -481,7 +497,7 @@ The lower bound is a model-native technique: a one-sided envelope
 inequality (downward incentive compatibility alone forces monotone
 utilities, so the utility derivative dominates the execution probability
 a.e.) integrated against a $V^{-2}$ kernel.
-More explicitly, in the screening core a type $V$ can only underreport:
+More explicitly, in the screening family a type $V$ can only underreport:
 binding bids prevent it from claiming more surplus than it can deliver.
 If $x(V)$ is execution probability and $u(V)$ interim utility, downward
 IC gives
