@@ -68,13 +68,16 @@ Mechanism design \and Blockchain \and Competitive analysis.}
 Blockchain ``trade-intent'' auctions let users state a desired exchange
 of one asset for another and delegate execution to competing agents
 called \emph{solvers}; the protocol collects intents off-chain and
-auctions them in batches. These markets are economically significant---
+auctions them in batches, in the spirit of frequent-batch market
+design~\cite{budish2015}. These markets are economically significant---
 recent figures put monthly volume on the order of billions of
 dollars\footnote{Order-of-magnitude figure from the deployment
 literature on the studied protocol; precise deployment identifiers are
 omitted for anonymity.}---and they are \emph{combinatorial}:
 a solver executing several intents together can net opposing flows and
-save on fees, producing more value than executing them separately. What
+save on fees, producing more value than executing them separately; this
+batching logic is central in MEV-aware market design
+too~\cite{daian2020,canidio2023}. What
 makes them unlike the combinatorial auctions of the literature is the
 absence of a \emph{numeraire}. Users may demand any asset for any other,
 there is no common unit of account, and assets are illiquid, so the
@@ -205,9 +208,16 @@ Contamination & threshold $\kappa_1\ge v\beta$ deters; $g\mapsto g/(1-\mu)$ & --
 The model and the equilibrium analysis of the fair combinatorial auction
 are due to Canidio and Henneke~\cite{canidio2024}; we complement their
 $2\times2$ equilibrium study with a worst-case, approximation-theoretic
-treatment. Combinatorial auctions are classical~\cite{cramton2006}, but
+analysis. The broader intent-market and solver-competition setting has
+also been modeled recently by Chitra et al.~\cite{chitra2024}, while
+batch trading has been proposed as a response to AMM arbitrage, LVR, and
+sandwich attacks~\cite{canidio2023}. Combinatorial auctions are
+classical~\cite{cramton2006}, but
 almost always \emph{with} a numeraire and quasilinear utilities; our
-setting has neither. The \emph{price of fairness} was introduced for
+setting has neither, putting it closer in spirit to mechanism design
+without money~\cite{procaccia2013} and recent no-transfer impossibility
+phenomena in MEV-aware fee mechanisms~\cite{bahrani2024}. The
+\emph{price of fairness} was introduced for
 divisible resources~\cite{bertsimas2011} and developed for indivisible
 goods under proportionality, envy-freeness, and
 MMS~\cite{caragiannis2012,bei2019,barman2020}, where it scales with the
@@ -217,10 +227,14 @@ the efficiency loss comes from the absence of a numeraire rather than
 from indivisibility. Equilibrium existence draws on assignment
 markets~\cite{shapley1971} and the package-assignment
 characterization~\cite{bikhchandani2002}, but neither applies verbatim
-without transfers, and we give native arguments. Our smoothness bound
-uses the first-price deviation of Syrgkanis and
-Tardos~\cite{syrgkanis2013}; the online search bounds instantiate
-one-way trading with a known spread~\cite{elyaniv2001}.
+without transfers, and the sharp $g=1$ threshold should be contrasted
+with the gross-substitutes frontier~\cite{kelso1982,gul1999}. Our
+smoothness bound uses the first-price deviation of Syrgkanis and
+Tardos~\cite{syrgkanis2013} and the robustness interpretation of
+smoothness~\cite{roughgarden2015}; the online search bounds instantiate
+one-way trading with a known spread~\cite{elyaniv2001}. We use recent
+order-flow-auction models~\cite{ma2025,chitra2024} only for positioning:
+our results are worst-case bounds for a no-numeraire fairness filter.
 
 \section{Model}\label{sec:model}
 
@@ -278,7 +292,10 @@ directed token pair (\emph{uniform directed prices}, UDP), forcing all
 orders on one directed pair into a single winning bid. UDP is vacuous in
 Sections~\ref{sec:pof}--\ref{sec:incentives} (our constructions use
 distinct pairs) and reappears as the source of fixed-parameter
-tractability. Full proofs of all numbered results are in the appendix.
+tractability. This is the order-level analogue of the uniform clearing
+price in frequent batch auctions~\cite{budish2015}, specialized to the
+trade-intent model of Canidio and Henneke~\cite{canidio2024}. Full
+proofs of all numbered results are in the appendix.
 
 \section{The Price of Fairness}\label{sec:pof}
 
@@ -372,6 +389,10 @@ can be converted back to repair it.
 The second question is structural. When does the same filter coincide
 with a competitive equilibrium or a cooperative stability notion rather
 than merely a feasibility rule? Here $g=1$ is the threshold.
+This is not a restatement of the gross-substitutes existence theory:
+gross substitutes support Walrasian equilibria with prices and transfers
+over items~\cite{kelso1982,gul1999}, whereas our frontier is about
+componentwise obligations in traders' requested assets.
 
 We work in the order-price abstraction of UDP: a directed-rate system
 induces order-level obligations $w_j\ge0$ that any solver serving $j$
@@ -473,7 +494,10 @@ uniform-price constraint.
 The third price is strategic. Truthfulness is not studied under the
 original endogenous benchmark, because the preceding structure creates a
 trilemma: current-report floors, ex-post fairness, and VCG-style
-strategyproofness cannot coexist without transfers.
+strategyproofness cannot coexist without transfers. This places the
+problem in the no-money mechanism-design tradition~\cite{procaccia2013},
+with a blockchain-specific impossibility flavor close to post-MEV fee
+mechanism design~\cite{bahrani2024}.
 
 Two impossibilities pin down the regime. First, with \emph{endogenous}
 floors---computed from the current reports---VCG-style compensation is
@@ -630,11 +654,13 @@ greedy mechanisms still pay $\Omega(g)$.
 \end{theorem}
 Thus Theorem~\ref{thm:online} is the operational reason for the
 exogenous-benchmark regime in Section~\ref{sec:incentives}; once floors
-are fixed, the residual problem is one-way search over width $g$.
+are fixed, the residual problem is one-way search over width
+$g$~\cite{elyaniv2001}.
 
 \paragraph{Strategic play.}
 For the first-price game, measured in produced welfare $\PW$ rather than
-delivered welfare, the individual-only restriction is smooth:
+delivered welfare, the individual-only restriction is smooth in the
+standard composable-mechanisms sense~\cite{syrgkanis2013,roughgarden2015}:
 \begin{theorem}[Individual competition is smooth]\label{thm:poa}
 Every coarse correlated equilibrium of the per-order-decomposable
 individual-only game has
@@ -644,6 +670,9 @@ relative to the unrestricted optimum. The full-game price of anarchy is
 conjectured $\Theta(g)$; the obstruction is latent batches that execute
 only under a deviation.
 \end{theorem}
+This isolates our game-theoretic statement from recent OFA models, which
+study different strategic environments under proposer-builder
+separation~\cite{ma2025,chitra2024}.
 
 \paragraph{Benchmark robustness.}
 On one directed pair, let an attacker of volume $v$ depress a quantile
