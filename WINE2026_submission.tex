@@ -208,33 +208,25 @@ Contamination & threshold $\kappa_1\ge v\beta$ deters; $g\mapsto g/(1-\mu)$ & --
 The model and the equilibrium analysis of the fair combinatorial auction
 are due to Canidio and Henneke~\cite{canidio2024}; we complement their
 $2\times2$ equilibrium study with a worst-case, approximation-theoretic
-analysis. The broader intent-market and solver-competition setting has
-also been modeled recently by Chitra et al.~\cite{chitra2024}, while
-batch trading has been proposed as a response to AMM arbitrage, LVR, and
-sandwich attacks~\cite{canidio2023}. Combinatorial auctions are
-classical~\cite{cramton2006}, but
-almost always \emph{with} a numeraire and quasilinear utilities; our
-setting has neither, putting it closer in spirit to mechanism design
-without money~\cite{procaccia2013} and recent no-transfer impossibility
-phenomena in MEV-aware fee mechanisms~\cite{bahrani2024}. The
-\emph{price of fairness} was introduced for
-divisible resources~\cite{bertsimas2011} and developed for indivisible
-goods under proportionality, envy-freeness, and
-MMS~\cite{caragiannis2012,bei2019,barman2020}, where it scales with the
-number of agents; our price of fairness is a different object---it scales
-with production complementarity and liquidity, not agent count, because
-the efficiency loss comes from the absence of a numeraire rather than
-from indivisibility. Equilibrium existence draws on assignment
-markets~\cite{shapley1971} and the package-assignment
-characterization~\cite{bikhchandani2002}, but neither applies verbatim
-without transfers, and the sharp $g=1$ threshold should be contrasted
-with the gross-substitutes frontier~\cite{kelso1982,gul1999}. Our
-smoothness bound uses the first-price deviation of Syrgkanis and
-Tardos~\cite{syrgkanis2013} and the robustness interpretation of
-smoothness~\cite{roughgarden2015}; the online search bounds instantiate
-one-way trading with a known spread~\cite{elyaniv2001}. We use recent
-order-flow-auction models~\cite{ma2025,chitra2024} only for positioning:
-our results are worst-case bounds for a no-numeraire fairness filter.
+analysis. Recent intent-market and solver-competition models give
+nearby strategic context~\cite{chitra2024}, and batch trading has been
+proposed as a response to AMM arbitrage, LVR, and sandwich
+attacks~\cite{canidio2023}. Combinatorial auctions are
+classical~\cite{cramton2006}, but almost always with a numeraire and
+quasilinear utilities; our setting has neither, putting it closer to
+mechanism design without money~\cite{procaccia2013} and no-transfer
+impossibility phenomena in MEV-aware fee mechanisms~\cite{bahrani2024}.
+The price of fairness was introduced for divisible
+resources~\cite{bertsimas2011} and developed for indivisible goods under
+proportionality, envy-freeness, and
+MMS~\cite{caragiannis2012,bei2019,barman2020}; here it scales with
+production complementarity and liquidity, not agent count. Equilibrium
+existence draws on assignment markets~\cite{shapley1971} and package
+assignment~\cite{bikhchandani2002}. Our smoothness bound uses
+Syrgkanis--Tardos~\cite{syrgkanis2013} and intrinsic
+robustness~\cite{roughgarden2015}; online search instantiates one-way
+trading~\cite{elyaniv2001}. Order-flow-auction models under PBS
+provide related strategic context~\cite{ma2025}.
 
 \section{Model}\label{sec:model}
 
@@ -317,28 +309,21 @@ tight, and independent of the number of orders and of prices
 \begin{proof}[Proof idea]
 \emph{Upper bound.} Process each bid of an unconstrained optimum
 independently. A bid with gain $\gamma=V/C_S\in[1,g]$ has deficit
-$D=\sum_{j\in S}(c_j-v_j)^+$. Because each delivered value is
-nonnegative, $D\le C_S$. There are only two useful fair actions. The
-\emph{drop} action ignores the batch and settles its covered orders at
-their floors, delivering $C_S=V/\gamma$; this is good whenever
-$\gamma\le\min(g,1/\theta)$. The \emph{repair} action keeps the batch
-and transfers enough of its own surplus to starved legs. Clearing a
-deficit $D$ loses $D(1-\theta)/\theta$ units of delivered welfare, so
-repair is feasible once $V-C_S\ge D(1-\theta)/\theta$, and then
+$D=\sum_{j\in S}(c_j-v_j)^+\le C_S$. Either drop the batch and settle
+floors, delivering $C_S=V/\gamma$, or repair starved legs using the
+batch's own surplus. Clearing $D$ loses $D(1-\theta)/\theta$, so whenever
+repair is feasible,
 \[
   \frac{V-D(1-\theta)/\theta}{V}
   \ge 1-\frac{1-\theta}{\theta\gamma}
   \ge \theta .
 \]
-Thus repair gives $V/(1/\theta)$ in the high-gain regime, while dropping
-gives $V/g$ in the low-gain regime. Summing over the disjoint optimal
-bids gives $\FAIR\ge\OPT/\min(g,1/\theta)$.
+Dropping covers low gains by $V/g$; repair covers high gains by
+$V/(1/\theta)$; summing over disjoint optimal bids gives the bound.
 \emph{Lower bound.} A two-order instance with one starved leg, calibrated
-to the repair/drop indifference point $\gamma^\ast=\min(g,1/\theta)$,
-forces $\FAIR=c$ against $\OPT=\gamma^\ast c$: either the batch is
-irreparable, or repair exactly exhausts the good leg's surplus. The
-binding instance is an extreme asymmetry, not maximal
-complementarity.\hfill$\square$
+to $\gamma^\ast=\min(g,1/\theta)$, forces
+$\FAIR=c$ against $\OPT=\gamma^\ast c$. The binding instance is an
+extreme asymmetry, not maximal complementarity.\hfill$\square$
 \end{proof}
 
 \begin{corollary}[Dichotomy]\label{cor:dichotomy}
@@ -539,12 +524,6 @@ minimal relaxation left after the endogenous benchmark has been shown to
 be strategically self-referential. The theorem below therefore measures
 the residual cost of truthfulness once that self-reference has been
 severed.
-It also isolates the source of the logarithm. Classical single-parameter
-auctions use a two-sided envelope; here upward lies are infeasible
-because the bid is binding, so only downward deviations remain. That
-one-sidedness is weaker than Myerson's identity but still strong enough
-to force a logarithmic screening loss over the multiplicative interval
-$[1,g]$.
 
 The canonical screening family of the regime is already nontrivial for
 one strategic solver:
@@ -560,26 +539,16 @@ and the best deterministic mechanism is exactly $\sqrt g$.
 The lower bound is a model-native technique: a one-sided envelope
 inequality (downward incentive compatibility alone forces monotone
 utilities, so the utility derivative dominates the execution probability
-a.e.) integrated against a $V^{-2}$ kernel.
-More explicitly, in the screening family a type $V$ can only underreport:
-binding bids prevent it from claiming more surplus than it can deliver.
-If $x(V)$ is execution probability and $u(V)$ interim utility, downward
-IC gives
+a.e.) integrated against a $V^{-2}$ kernel. In the screening family a
+type $V$ can only underreport; if $x(V)$ is execution probability and
+$u(V)$ interim utility, downward IC gives
 \[
   u(V)\ge u(V')+(V-V')x(V') \qquad (V'\le V),
 \]
-so $u'(V)\ge x(V)$ almost everywhere. Integrating this one-sided
-envelope against the scale-free kernel $dV/V^2$ forces logarithmic loss.
-The best deterministic rule balances the missed-high-type and
-overpriced-low-type losses at threshold $\sqrt g$. Two mechanisms lift
-the logarithmic guarantee to the full game.
-
-The upper bound mirrors the lower bound's geometry. A random geometric
-level guesses the right scale of the batch: if the level is too high, the
-mechanism safely falls back to floors; if it lands within a constant
-factor of the batch's gain, it captures a constant fraction of that
-gain. Uniform randomness over $\lceil\log g\rceil+1$ levels is therefore
-the unavoidable cost of not knowing the scale.
+so $u'(V)\ge x(V)$ a.e.; the scale-free integral forces logarithmic loss.
+The deterministic optimum balances the two errors at threshold $\sqrt g$.
+Random geometric posted levels give the matching upper bound up to
+constants. Two mechanisms lift the guarantee to the full game.
 
 \begin{theorem}[Two routes to $\Theta(1+\log g)$]\label{thm:lift}
 (i) For arbitrarily many single-minded solvers with public floors, an
@@ -670,9 +639,6 @@ relative to the unrestricted optimum. The full-game price of anarchy is
 conjectured $\Theta(g)$; the obstruction is latent batches that execute
 only under a deviation.
 \end{theorem}
-This isolates our game-theoretic statement from recent OFA models, which
-study different strategic environments under proposer-builder
-separation~\cite{ma2025,chitra2024}.
 
 \paragraph{Benchmark robustness.}
 On one directed pair, let an attacker of volume $v$ depress a quantile
