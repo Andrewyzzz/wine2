@@ -1,6 +1,7 @@
 \documentclass[runningheads]{llncs}
 
 \usepackage{amsmath,amssymb,mathtools}
+\usepackage{array}
 \usepackage{booktabs}
 \usepackage{enumitem}
 \usepackage[hidelinks]{hyperref}
@@ -108,6 +109,11 @@ which is what gives the design a unified analysis rather than a
 collection of unrelated bounds.
 
 \paragraph{Contributions.}
+The main results are Theorems~\ref{thm:pof}--\ref{prop:walras}; they give
+the exact fairness, coverage, and equilibrium frontiers of the model.
+Sections~\ref{sec:incentives}--\ref{sec:online} then show that the same
+spread parameter $g$ also governs incentives, online behavior, and
+benchmark manipulation.
 \begin{enumerate}[leftmargin=*,itemsep=2pt]
 \item \textbf{Price of fairness (Section~\ref{sec:pof}).} The welfare
 ratio between the unconstrained optimum and the best fair outcome is
@@ -165,10 +171,15 @@ Table~\ref{tab:summary} collects the quantitative results.
 \centering
 \caption{Worst-case prices as functions of the complementarity factor
 $g$ and liquidity $\theta$ ($N$: number of strategic solvers; $\alpha$:
-coverage). ``exact'' marks tight characterizations.}
+coverage). ``exact'' marks literal equalities or fully tight
+characterizations; ``asymptotically tight'' marks $\Theta(\cdot)$
+bounds.}
 \label{tab:summary}
-\small
-\begin{tabular}{@{}lll@{}}
+\footnotesize
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.27\textwidth}
+                  >{\raggedright\arraybackslash}p{0.52\textwidth}
+                  >{\raggedright\arraybackslash}p{0.16\textwidth}@{}}
 \toprule
 Quantity & Result & Status\\
 \midrule
@@ -177,11 +188,11 @@ Price of fairness & $\min(g,1/\theta)$; endpoints $\{g,1\}$ & exact\\
 Walrasian/UDP existence & for all instances iff $g=1$ & exact\\
 Core & filter $=$ singleton-core; $g$-core nonempty, tight & exact\\
 Winner determination & NP-hard; FPT in directed pairs $P$ & ---\\
-Strategyproofness (core) & $\Theta(1+\log g)$; det.\ exactly $\sqrt g$ & exact\\
-\quad single-/multi-minded & both $\Theta(1+\log g)$; indep.\ $\Omega(g/\log^2 g)$ & exact\\
+Strategyproofness (core) & $\Theta(1+\log g)$; det.\ exactly $\sqrt g$ & asympt.\ tight\\
+\quad single-/multi-minded & both $\Theta(1+\log g)$; indep.\ $\Omega(g/\log^2 g)$ & asympt.\ tight\\
 \quad multi-agent multi-minded & $O(N\log g)$ / serial $\Omega(\min(N,g))$ & partial\\
 Online (realized floors) & exactly $g$, even randomized & exact\\
-Online (static floors) & det.\ $\Theta(\sqrt g)$, rand.\ $\Theta(\log g)$ & exact\\
+Online (static floors) & det.\ $\Theta(\sqrt g)$, rand.\ $\Theta(\log g)$ & asympt.\ tight\\
 Price of anarchy & individual-only $\le e/(e-1)$; full conj.\ $\Theta(g)$ & partial\\
 Contamination & threshold $\kappa_1\ge v\beta$ deters; $g\mapsto g/(1-\mu)$ & ---\\
 \bottomrule
@@ -220,6 +231,13 @@ executes; production is asset-specific, so absent conversion a winner
 delivers $w_j\le v_j$ to each $j\in S$ \emph{in asset $a_j$} and cannot
 move value across assets or traders. There are no monetary transfers---
 the structural element absent from classical combinatorial auctions.
+The quantities $v_j$ and $w_j$ are measured in the trader-normalized
+score units induced by order $j$'s requested asset (the units used by the
+settlement rule to compare delivered outcomes for that order). Thus
+$W=\sum_j w_j$ is an additive objective over normalized delivered
+scores, not a transferable monetary surplus; the no-numeraire constraint
+is precisely that these scores cannot be redistributed across traders as
+cash payments.
 
 \begin{definition}[Complementarity factor]\label{def:g}
 The instance has complementarity factor $g\ge1$ if
