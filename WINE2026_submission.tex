@@ -70,8 +70,8 @@ called \emph{solvers}; the protocol collects intents off-chain and
 auctions them in batches. These markets are economically significant---
 recent figures put monthly volume on the order of billions of
 dollars\footnote{Order-of-magnitude figure from the deployment
-literature on the studied protocol; the precise figure and asset counts
-are recalled in the full version.}---and they are \emph{combinatorial}:
+literature on the studied protocol; precise deployment identifiers are
+omitted for anonymity.}---and they are \emph{combinatorial}:
 a solver executing several intents together can net opposing flows and
 save on fees, producing more value than executing them separately. What
 makes them unlike the combinatorial auctions of the literature is the
@@ -283,7 +283,7 @@ Summing over the disjoint optimal bids gives $\FAIR\ge\OPT/\min(g,1/\theta)$.
 \emph{Lower bound.} A two-order instance with one starved leg, calibrated
 to the repair/drop indifference point $\gamma^\ast=\min(g,1/\theta)$,
 forces $\FAIR=c$ against $\OPT=\gamma^\ast c$. The binding instance is an
-extreme asymmetry, not maximal complementarity.\qed
+extreme asymmetry, not maximal complementarity.\hfill$\square$
 \end{proof}
 
 \begin{corollary}[Dichotomy]\label{cor:dichotomy}
@@ -358,7 +358,7 @@ imply it here, since feasibility only \emph{removes} deviations---a
 three-cycle of overlapping pair-batches with vector
 $(1+\tfrac\delta2,1+\tfrac\delta2)$ over floors $1$: individual
 feasibility forces $w_3\le1$, which blocks the high-rate support route,
-and the remaining deviation inequalities give $\delta\le0$.\qed
+and the remaining deviation inequalities give $\delta\le0$.\hfill$\square$
 \end{proof}
 
 The filter also has a cooperative reading. A bid \emph{blocks} an

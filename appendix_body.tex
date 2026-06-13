@@ -12,12 +12,19 @@ $D=\sum_{j\in S}(c_j-v_j)^+$. Two fair uses:
 total surplus available is $s=V-(C_S-D)=V-C_S+D$, and clearing the
 deficit costs $D/\theta$ units of surplus (haircut $\lambda=1-\theta$).
 This is feasible iff $V-C_S\ge D\frac{1-\theta}{\theta}$, and then the
-delivered welfare is $f=V-D\frac{1-\theta}{\theta}$. Since $D\le C_S$ and
-$V-C_S=(\gamma-1)C_S$, feasibility holds whenever
+delivered welfare is $f=V-D\frac{1-\theta}{\theta}$. Since every delivered
+value is nonnegative, $(c_j-v_j)^+\le c_j$ and therefore $D\le C_S$.
+Together with $V-C_S=(\gamma-1)C_S$, feasibility holds whenever
 $\gamma-1\ge\frac{1-\theta}{\theta}$, i.e. $\gamma\ge1/\theta$; then
-$f\ge V-C_S\frac{1-\theta}{\theta}=V\big(1-\frac{\gamma-1+\ldots}{}\big)$,
-and a direct computation gives $f\ge V/\!\min(g,1/\theta)$ in the regime
-$\gamma\ge\min(g,1/\theta)$.
+\[
+  \frac{f}{V}
+  =1-\frac{1-\theta}{\theta\gamma}\frac{D}{C_S}
+  \ge 1-\frac{1-\theta}{\theta\gamma}
+  \ge \theta
+  = \frac{1}{1/\theta}.
+\]
+Thus repair gives $f\ge V/(1/\theta)$ whenever $\gamma\ge1/\theta$, and
+hence $f\ge V/\!\min(g,1/\theta)$ in the repair regime.
 
 \emph{Drop.} Settle every covered order at its floor: $f=C_S=V/\gamma$.
 For $\gamma\le\min(g,1/\theta)$ this is $\ge V/\!\min(g,1/\theta)$.
@@ -35,13 +42,13 @@ $\gamma^\ast=1/\theta$ this exhausts $v_1$ exactly (welfare $c$), and if
 $\gamma^\ast=g<1/\theta$ the batch is irreparable (welfare $c$ from the
 individual allocation). In both cases $\FAIR=c$ and
 $\OPT=\gamma^\ast c$, so $\OPT/\FAIR=\gamma^\ast$. Independence of the
-number of orders and of prices is immediate from the construction.\qed
+number of orders and of prices is immediate from the construction.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:dirrel}]
 The two-order family of Theorem~\ref{thm:pof} already has $d=2$ and
 attains $\min(g,1/\theta)$, and the upper bound never uses $d$; for
-$d=1$ only singletons exist, so $\OPT=\FAIR=C$.\qed
+$d=1$ only singletons exist, so $\OPT=\FAIR=C$.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:coverage}]
@@ -58,7 +65,7 @@ $v_1=(\gamma^\ast-\alpha)c$, $\gamma^\ast=\min(g,\Gamma)$. Repairing
 order $2$ needs $(1-\alpha)c/\theta$ from $v_1$; if $\gamma^\ast=\Gamma$
 then $v_1=(\Gamma-\alpha)c=\frac{(1-\alpha)c}{\theta}$ exactly, and if
 $\gamma^\ast=g<\Gamma$ the batch is irreparable. Either way $\FAIR=c$,
-$\OPT=\gamma^\ast c$.\qed
+$\OPT=\gamma^\ast c$.\hfill$\square$
 \end{proof}
 
 \section{Full Proofs for Section~\ref{sec:walras}}
@@ -70,7 +77,7 @@ $\sum_{j\in S}(v_j-w_j)=V_i(S)-\sum_{j\in S}w_j\le
 positive-profit singleton has $V_i(\{j\})>w_j$, hence is executable; a
 non-executable batch is not a deviation. The obligation $w_j$ is the same
 whether $j$ is served in the batch or individually, which is the only
-property of UDP used.\qed
+property of UDP used.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{prop:walras}]
@@ -100,7 +107,7 @@ equilibrium requires it unprofitable against its solver's individual
 alternatives: $(2+\delta)-w_2-w_3\le(1-w_2)^++(1-w_3)^+$. If $w_2\le1$
 the right side is $(1-w_2)+(1-w_3)$, giving $\delta\le0$; if $w_2>1$ it
 is $1-w_3$, giving $w_2\ge1+\delta>1+\tfrac\delta2$, contradicting
-feasibility. No supporting rates exist.\qed
+feasibility. No supporting rates exist.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Proposition~\ref{prop:core}]
@@ -117,7 +124,7 @@ three transferable core constraints $x_j+x_{j'}\ge2+\delta$ gives
 $\sum x_j\ge3+\tfrac{3\delta}2>3+\delta=\OPT$, so the transferable core is
 empty; the allocation (batch $\{1,2\}$, order $3$ individually) is
 $\theta=0$-unblocked since every other batch caps a covered order at a
-value already attained.\qed
+value already attained.\hfill$\square$
 \end{proof}
 
 \paragraph{Complexity.}
@@ -180,7 +187,7 @@ the worst case over $V\in[1,g]$ is balanced at $\tau=\sqrt g$, where both
 the "execute'' branch ($V/\tau$ at $V=g$) and the "floor'' branch
 ($\tau/1$ at $V=\tau^-$) equal $\sqrt g$, and no deterministic rule does
 better. Since $R_g$ embeds as a degenerate single-minded subfamily of the
-full model, all three bounds transfer.\qed
+full model, all three bounds transfer.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:lift}]
@@ -231,7 +238,7 @@ $\E[W]\ge\FAIR/((e-1)(\lceil\ln g\rceil+1)+1)$.
 priced independently on the geometric ladder, a multi-minded solver
 demands only the single cheapest, delivering $O(1)$ options while the fair
 optimum uses $\Theta(m)$; calibrating $m=\Theta(\log^2 g)$ gives the ratio
-$\Omega(g/\log^2 g)$.\qed
+$\Omega(g/\log^2 g)$.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:multi}]
@@ -277,7 +284,7 @@ batcher at $i^\ast$ caps its expected delivery at $\rho C_G/N$, while the
 fair optimum delivers $\Theta(\rho C_G)$ via the batch; the ratio is
 $\Omega(\min(N,g))$ (using $\rho>g/2$). The blockers' geometry is public
 and identical across placements, so the bound holds even for
-geometry-aware orders.\qed
+geometry-aware orders.\hfill$\square$
 \end{proof}
 
 \section{Full Proofs for Section~\ref{sec:online}}
@@ -285,7 +292,7 @@ geometry-aware orders.\qed
 \begin{proof}[Proof of Proposition~\ref{prop:online}]
 Settle-at-deadline is fair and achieves $C$ on every instance, while
 $\FAIR\le\OPT\le gC$, so the ratio is at most $g$; a staggered-deadline
-instance forcing individual-only settlement shows it is at least $g$.\qed
+instance forcing individual-only settlement shows it is at least $g$.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:online}]
@@ -311,7 +318,7 @@ $i\le\lfloor\ln g\rfloor$, shown for the first $M$ with
 $\Pr[M\ge i]=e^{-i}$, caps every deterministic threshold at $2c$ while
 $\E[\FAIR]=\Omega(c\log g)$. Greedy: a ratio-$g$ blocker arriving before a
 ratio-$g$ batch is accepted (killing the batch) for any threshold
-$T\le g$ and rejected with the batch for $T>g$, ratio $\Omega(g)$.\qed
+$T\le g$ and rejected with the batch for $T>g$, ratio $\Omega(g)$.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:poa}]
@@ -328,7 +335,7 @@ unrestricted optimum, $\OPT\le g\,\OPT_{\mathrm{ind}}$. The pure-NE lower
 bound is Theorem~\ref{thm:pof}'s instance with a filtered $(2gv,0)$
 batch. The full-game obstruction is a latent batch present in $b_{-i}$
 that executes under the deviation but not under $b$, breaking every
-charging scheme.\qed
+charging scheme.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:contam}]
@@ -374,5 +381,5 @@ spread $G=\max_iV_i/C_{S_i}$ becomes $G/(1-\mu)$; the coverage law
 recalibrates jointly,
 $(g,\alpha)\mapsto(g/(1-\mu),\min\{1,\alpha/(1-\mu)\})$. Structural
 production complementarity, directed-pair complexity, and produced-welfare
-PoA are unaffected.\qed
+PoA are unaffected.\hfill$\square$
 \end{proof}
