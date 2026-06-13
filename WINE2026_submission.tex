@@ -36,9 +36,10 @@ the resulting surplus. The deployed fix builds an endogenous fairness
 benchmark from the bids and executes a batched bid only if it delivers to
 every covered trader at least that trader's standalone competitive
 outcome. We give a worst-case theory of this design around one invariant:
-the complementarity factor $g$, the largest ratio of a batch's value to
-the sum of its components' standalone values, together with liquidity
-$\theta=1-\lambda$.
+the complementarity factor $g$, together with liquidity $\theta=1-\lambda$.
+The model and fairness benchmark are due to Canidio and
+Henneke~\cite{canidio2024}; our contribution is the worst-case
+approximation, competitive, and incentive layer on top.
 
 The price of fairness is exactly $\min(g,1/\theta)$, tight for all
 parameters and independent of the number of orders and of prices, with a
@@ -92,7 +93,8 @@ of sharing batching gains by never allowing a batch to make any trader
 worse off than individual competition would. The equilibrium behavior of
 this design was analyzed by Canidio and Henneke~\cite{canidio2024}, who
 identify a tension between the fairness guarantee and the value returned
-to traders. What is missing is a \emph{worst-case} theory: how much
+to traders. Thus the model and benchmark are theirs; our contribution is
+the worst-case approximation layer around them: how much
 welfare does the fairness filter cost, when do competitive equilibria
 exist, what does strategyproofness cost, and how do these prices behave
 online and under manipulation.
@@ -183,8 +185,8 @@ bounds.}
 \footnotesize
 \setlength{\tabcolsep}{2pt}
 \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.27\textwidth}
-                  >{\raggedright\arraybackslash}p{0.52\textwidth}
-                  >{\raggedright\arraybackslash}p{0.16\textwidth}@{}}
+                  >{\raggedright\arraybackslash}p{0.48\textwidth}
+                  >{\raggedright\arraybackslash}p{0.20\textwidth}@{}}
 \toprule
 Quantity & Result & Status\\
 \midrule
@@ -195,10 +197,10 @@ Core & filter $=$ singleton-core; $g$-core nonempty, tight & exact\\
 Winner determination & NP-hard; FPT in directed pairs $P$ & ---\\
 Strategyproofness (screening) & $\Theta(1+\log g)$; det.\ exactly $\sqrt g$ & asympt.\ tight\\
 \quad single-/multi-minded & both $\Theta(1+\log g)$; indep.\ $\Omega(g/\log^2 g)$ & asympt.\ tight\\
-\quad multi-agent multi-minded & $O(N\log g)$ / serial $\Omega(\min(N,g))$ & partial\\
+\quad multi-agent multi-minded & $O(N\log g)$ / serial $\Omega(\min(N,g))$ & partial (serial barrier)\\
 Online (realized floors) & exactly $g$, even randomized & exact\\
 Online (static floors) & det.\ $\Theta(\sqrt g)$, rand.\ $\Theta(\log g)$ & asympt.\ tight\\
-Price of anarchy & individual-only $\le e/(e-1)$; full conj.\ $\Theta(g)$ & partial\\
+Price of anarchy & individual-only $\le e/(e-1)$; full conj.\ $\Theta(g)$ & partial (latent batches)\\
 Contamination & threshold $\kappa_1\ge v\beta$ deters; $g\mapsto g/(1-\mu)$ & ---\\
 \bottomrule
 \end{tabular}
@@ -288,6 +290,15 @@ tractability. This is the order-level analogue of the uniform clearing
 price in frequent batch auctions~\cite{budish2015}, specialized to the
 trade-intent model of Canidio and Henneke~\cite{canidio2024}. Full
 proofs of all numbered results are in the appendix.
+
+\paragraph{Running example.}
+The basic tension already appears with two orders. Suppose order $2$ has
+floor $c$ and order $1$ has essentially no standalone floor, while a
+batch creates total value $\gamma c$ mostly on order $1$. Fairness forces
+the batch either to transfer value across assets to repair order $2$, or
+to drop the batch and settle floors. This repair/drop tradeoff is the
+geometry behind Theorem~\ref{thm:pof}; the sharp loss occurs when
+$\gamma=\min(g,1/\theta)$.
 
 \section{The Price of Fairness}\label{sec:pof}
 
@@ -694,6 +705,11 @@ the share with $\widehat G^{\mathrm{obs}}>2$ is 63.1\%. Thus the spread
 phenomenon is not confined to worst-case constructions.
 As $g\to1$ the bound collapses to $1$ (fairness becomes free), while the
 visible-spread tail shows where non-trivial $g$ is operationally relevant.
+The point is not to estimate structural $g$. The bounds are design
+guardrails: they say what happens if flow drifts toward high-complementarity
+or thin-liquidity assets, exactly where the small-notional tail is
+largest. They also remain relevant under manipulation, since benchmark
+contamination feeds back as $g\mapsto g/(1-\mu)$.
 
 \paragraph{Benchmark robustness.}
 The same trace motivates the contamination model: under a naive local
