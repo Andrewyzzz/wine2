@@ -1,19 +1,27 @@
 \section{Full Proofs for Section~\ref{sec:pof}}
 
 \begin{proof}[Proof of Theorem~\ref{thm:pof}]
+\emph{Endpoint.} If $\theta=0$, repair is unavailable; dropping every OPT
+batch to the singleton floor allocation loses at most the factor $g$, and
+the lower-bound construction below attains $g$. Hence assume $\theta>0$
+for the repair calculation.
+
 \emph{Upper bound.} Fix an unconstrained optimum and process its winning
 bids independently; bids cover disjoint order sets, so the repaired
 welfares add. Take a winning bid with floor mass $C_S=\sum_{j\in S}c_j>0$
 (a bid with $C_S=0$ has all floors zero and is already fair), value
 $V=\sum_{j\in S}y_j$, where $y_j:=y_{i,S,j}$, gain
-$\gamma=V/C_S\in[1,g]$, and deficit
-$D=\sum_{j\in S}(c_j-y_j)^+$. Two fair uses:
+$\gamma=V/C_S$, and deficit $D=\sum_{j\in S}(c_j-y_j)^+$. By local
+optimality of $\OPT$, we may assume $V\ge C_S$ (otherwise replacing this
+bid by the singleton floor allocation on $S$ improves welfare), so
+$\gamma\ge1$; Definition~\ref{def:g} gives $\gamma\le g$. Two fair uses:
 
 \emph{Repair.} Move value from over-served legs to starved ones. The
 total surplus available is $s=V-(C_S-D)=V-C_S+D$, and clearing the
 deficit costs $D/\theta$ units of surplus (haircut $\lambda=1-\theta$).
 This is feasible iff $V-C_S\ge D\frac{1-\theta}{\theta}$, and then the
-delivered welfare is $f=V-D\frac{1-\theta}{\theta}$. Since every delivered
+delivery saturating the conversion budget of Definition~\ref{def:theta}
+has welfare $f=V-D\frac{1-\theta}{\theta}$. Since every raw output
 value is nonnegative, $(c_j-y_j)^+\le c_j$ and therefore $D\le C_S$.
 Together with $V-C_S=(\gamma-1)C_S$, feasibility holds whenever
 $\gamma-1\ge\frac{1-\theta}{\theta}$, i.e. $\gamma\ge1/\theta$; then
@@ -37,9 +45,11 @@ summing, $\FAIR\ge\OPT/\min(g,1/\theta)$.
 distinct pairs, $c_1=0$, $c_2=c$; one batched bid with
 $y_2=0$, $y_1=\gamma^\ast c$, so $V=\gamma^\ast c$, $C_S=c$, and the
 batching solver's standalone values are $0,c$, so
-Definition~\ref{def:g} holds as $\gamma^\ast\le g$. Repairing order $2$
-to its floor $c$ requires withdrawing $c/\theta$ from $y_1$; if
-$\gamma^\ast=1/\theta$ this exhausts $y_1$ exactly (welfare $c$), and if
+Definition~\ref{def:g} holds as $\gamma^\ast\le g$. The unconstrained
+optimum runs this batch, delivering $\gamma^\ast c$ (all on order~1), so
+$\OPT=\gamma^\ast c$. Fair repair of order $2$ to its floor $c$ requires
+withdrawing $c/\theta$ from $y_1$; if $\gamma^\ast=1/\theta$ this exhausts
+$y_1$ exactly (delivered welfare $c$), and if
 $\gamma^\ast=g<1/\theta$ the batch is irreparable (welfare $c$ from the
 individual allocation). In both cases $\FAIR=c$ and
 $\OPT=\gamma^\ast c$, so $\OPT/\FAIR=\gamma^\ast$. Independence of the
@@ -53,6 +63,11 @@ $d=1$ only singletons exist, so $\OPT=\FAIR=C$.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:coverage}]
+\emph{Endpoint.} If $\theta=0$ and $\alpha<1$, repair is unavailable and
+the drop argument gives ratio $g$; if $\alpha=1$, every admitted bid
+already clears all floors and the ratio is $1$. Hence assume $\theta>0$
+below.
+
 \emph{Upper bound.} Write
 $\Gamma=\Gamma(\theta,\alpha):=\alpha+(1-\alpha)/\theta$, with the
 endpoint convention from the theorem. As above, coverage caps the deficit by
@@ -64,7 +79,9 @@ $\gamma$, equality at $\gamma=\Gamma$); dropping gives $V/\gamma\ge
 V/\Gamma$ for $\gamma\le\Gamma$ and $V/g$ for $\gamma\le g$. Hence
 $\FAIR\ge\OPT/\min(g,\Gamma)$. \emph{Lower bound.} Two orders, $c_1=0$,
 $c_2=c$; batched bid with $y_2=\alpha c$ (coverage saturated) and
-$y_1=(\gamma^\ast-\alpha)c$, $\gamma^\ast=\min(g,\Gamma)$. Repairing
+$y_1=(\gamma^\ast-\alpha)c$, $\gamma^\ast=\min(g,\Gamma)$; the batching
+solver's standalone values are $0,c$, so Definition~\ref{def:g} holds as
+$\gamma^\ast\le g$. Repairing
 order $2$ needs $(1-\alpha)c/\theta$ from $y_1$; if $\gamma^\ast=\Gamma$
 then $y_1=(\Gamma-\alpha)c=\frac{(1-\alpha)c}{\theta}$ exactly, and if
 $\gamma^\ast=g<\Gamma$ the batch is irreparable. Either way $\FAIR=c$,
@@ -103,7 +120,8 @@ Lemma~\ref{lem:domination} reduces the economy).
 
 \emph{$(b)$, $g>1$.} We argue natively; non-existence with transfers does
 not transfer, as feasibility only removes deviations. Fix
-$\delta\in(0,2(g-1)]$; orders $1,2,3$ on distinct pairs, a rival with
+$\delta\in(0,2(g-1)]$; orders $1,2,3$ on distinct pairs, so the floor
+vector $c_j=1$ is rate-realizable. A rival has
 standalone value $1$ on each ($c_j=1$), and three solvers each holding
 one batched bid on a pair $\{j,j'\}$ with vector
 $(1+\tfrac\delta2,1+\tfrac\delta2)$ (value $2+\delta\le2g$) and
@@ -137,9 +155,16 @@ value already attained.\hfill$\square$
 \end{proof}
 
 \paragraph{Complexity.}
-NP-hardness is a reduction from 3-dimensional matching: orders are
-ground elements, batched bids are triples of value $1$, and a fair
-welfare-$n$ allocation exists iff a perfect matching does. For
+NP-hardness is a reduction from 3-dimensional matching: orders are ground
+elements, each element has an individual bid of value $1$, and each triple
+is represented by a solver whose singleton values on the three covered
+elements are all $1$ and whose triple bid produces $1+\delta/3$ on each of
+the three orders (total value $3+\delta\le3g$ for $\delta\le3(g-1)$). Thus
+the triple satisfies the complementarity bound and passes the fairness
+filter.
+If the maximum number of disjoint triples is $m$, the optimum welfare is
+$n+\delta m$, where $n$ is the number of ground elements; hence welfare
+$n+\delta n/3$ is attainable iff a perfect matching exists. For
 fixed-parameter tractability, treat each directed pair as an atomic item
 under UDP: all orders on the same directed pair settle together, so a
 feasible solution either assigns the entire directed-pair block to one
@@ -224,37 +249,49 @@ draws deliver at least the floor mass. Hence
 $\E[\text{welfare}]\ge\max\big(V/(e(K+1)),1\big)\ge\FAIR/(e(\lceil\ln
 g\rceil+1))$.
 
-\emph{Deterministic optimum.} A single deterministic threshold $\tau$
-executes iff $V\ge\tau$: welfare is $V$ on executed types and the floor
-welfare $1$ otherwise. The worst case over $V\in[1,g]$ is therefore
-balanced at $\tau=\sqrt g$, where the high-type loss $g/\tau$ and the
-floor loss $\tau/1$ (just below threshold) both equal $\sqrt g$, and no
-deterministic rule does better. Since $R_g$ embeds as a degenerate
-single-minded subfamily of the full model, all three bounds
-transfer.\hfill$\square$
+\emph{Deterministic optimum.} Let the mechanism be deterministic. First,
+its execution rule is a threshold: if $p(r)=1$ and $p(V)=0$ for some
+$r<V$, type $V$ has truthful utility $0$, while under-reporting $r$ yields
+utility $V-x(r)\ge V-r>0$ (feasibility at report $r$ gives $x(r)\le r$),
+contradicting downward IC. Thus there is a threshold $\tau$ (up to the
+boundary point) such that types below $\tau$ are not executed and types
+above $\tau$ are. Second, the accepted delivery is bounded by $\tau$: for
+$\tau\le r<V$, downward IC gives $V-x(V)\ge V-x(r)$, hence
+$x(V)\le x(r)$; letting $r\downarrow\tau$ and using feasibility
+$x(r)\le r$ gives $x(V)\le\tau$ for all executed types, in particular
+$x(g)\le\tau$. Types just below $\tau$ have welfare $1$, while type $g$
+has welfare at most $\tau$, so every deterministic DSIC rule has ratio at
+least $\max\{\tau,g/\tau\}\ge\sqrt g$. The posted delivery $\sqrt g$
+attains this bound. Since $R_g$ embeds as a degenerate single-minded
+subfamily of the full model, all three bounds transfer.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:lift}]
-\emph{(i) Eligibility-posted packing.} From the public floors form, for a
-random $k\sim\mathrm{Unif}\{0,\dots,K\}$, $K=\lceil\ln g\rceil$, the
-posted weight $C_S e^{k}$ for each option $S$ and let a solver accept its
+\emph{(i) Eligibility-posted packing.} In the public-floor regime, draw
+$k\sim\mathrm{Unif}\{0,\dots,K\}$, $K=\lceil\ln g\rceil$, post the weight
+$C_S e^{k}$ for each option $S$, and let a solver accept its
 option iff its binding value clears this weight; among accepted options
-take a maximum-weight disjoint packing using the posted weights. The
+take a maximum-weight disjoint packing using the posted weights. Accepted
+options deliver their posted weights componentwise by the filter-passing
+scaling condition from the mechanism model; all orders not covered by the
+selected posted options settle at their public floors. The
 posted weights and packing rule are report-independent, so each solver
 faces a take-it-or-leave-it offer and the mechanism is universally
-truthful. Writing
-$X$ for the welfare of the offline fair optimum carried by batches and
-$Y=C$ for the floor mass, the geometric draw clears a $1/(e(K+1))$
-fraction of $X$ in expectation while every realization secures $Y$, so by
-$\max(X/a,Y)\ge(X+Y)/(a+1)$ with $a=e(K+1)$,
+truthful. Let
+$X$ be the total value of the batch options used by the offline fair
+optimum. The geometric draw captures expected posted delivery at least
+$X/(e(K+1))$. Independently, every realization settles all orders at least
+at their public floors, so $W\ge C$. Since $\FAIR\le X+C$, the
+max-inequality with $a=e(K+1)$ gives
 $\E[W]\ge\FAIR/(e(\lceil\ln g\rceil+1)+1)$.
 
 \emph{(ii) Coupled menu.} Draw $k$ uniformly from $\{0,\ldots,K\}$ and
 set $t=e^k$. Post every option at price $C_S\,t$. Let the solver demand a
 profit-maximizing disjoint collection $\mathcal C^\ast(t)$. This is
 universally truthful because the posted menu is report-independent. It is
-feasible because any demanded $S$ has $V_S\ge C_St\ge C_S$, so posted
-delivery clears its floors. Let
+feasible because any demanded $S$ has $V_S\ge C_St\ge C_S$, and the
+filter-passing scaling condition from the mechanism model implements total
+delivery $C_St$ while clearing floors componentwise. Let
 \[
 p(t)=
 \max_{\mathcal C\text{ disjoint}}
@@ -282,11 +319,25 @@ $p(1)\ge\sum_{S\in B^\ast}(V_S-C_S)=\FAIR-C$, and combining with the
 pointwise $W\ge C$ via the same $\max$-inequality yields
 $\E[W]\ge\FAIR/((e-1)(\lceil\ln g\rceil+1)+1)$.
 
-\emph{Independent pricing fails.} With $m$ options sharing one order, each
-priced independently on the geometric ladder, a multi-minded solver
-demands only the single cheapest, delivering $O(1)$ options while the fair
-optimum uses $\Theta(m)$; calibrating $m=\Theta(\log^2 g)$ gives the ratio
-$\Omega(g/\log^2 g)$.\hfill$\square$
+\emph{Independent geometric pricing fails.}
+The separation uses the following construction. There are options
+$S_t=\{0,t\}$ for $t=1,\dots,m$, all sharing the common order $0$, with
+$c_0=c_t=\tfrac12$ and $C_{S_t}=1$. The solver has value $V_t=g$ for every
+option. Independent geometric prices make the solver choose only the
+cheapest acceptable option: $D=P_{\min}$ if $P_{\min}\le g$, and $D=0$
+otherwise. Hence
+\[
+D\le1+g\,\mathbf 1\{P_{\min}\ge e\}.
+\]
+Moreover,
+\[
+\Pr[P_{\min}\ge e]=(K/(K+1))^m\le e^{-m/(K+1)} .
+\]
+Choosing $m=\lceil(K+1)\ln g\rceil$ gives $\E[D]\le2$. Thus
+$\E[W]\le2+C=O(\log^2 g)$, while the fair optimum obtains
+$\FAIR=g+(m-1)/2=\Omega(g)$ by taking one high-value option and settling
+the remaining leaf orders at floors. Hence the independent geometric
+analogue has ratio $\Omega(g/\log^2 g)$.\hfill$\square$
 \end{proof}
 
 \begin{proof}[Proof of Theorem~\ref{thm:multi}]
@@ -395,6 +446,24 @@ that executes under the deviation but not under $b$, breaking every
 charging scheme.\hfill$\square$
 \end{proof}
 
+\section{Benchmark Manipulation}\label{app:manipulation}
+
+On one directed pair, let an attacker of volume $v$ depress a quantile
+benchmark by injecting mass $a$ at convex cost
+$K(a)=\kappa_1a+\tfrac{\kappa_2}2a^2$, with local sensitivity $\beta$.
+For a lower-tail quantile of $m$ honest quotes with density $f$ at
+$b^\ast$, first-order sensitivity is $\beta=1/(mf(b^\ast))$.
+
+\begin{theorem}[The contamination game]\label{thm:contam}
+A marginal injection cost $\kappa_1\ge v\beta$ deters contamination.
+Otherwise the optimal steady attack is
+$a^\ast=\min\{\bar a,(v\beta-\kappa_1)/\kappa_2\}$, inducing relative
+bias $\mu=\beta a^\ast/b^\ast$; bursts do not beat the constant attack,
+and rate limits tax restarts through a finite ramp without changing the
+steady state. Every floor-calibrated guarantee is then read with
+$g\mapsto g/(1-\mu)$.
+\end{theorem}
+
 \begin{proof}[Proof of Theorem~\ref{thm:contam}]
 The steady-state benchmark under a constant injection $a$ is
 $b^\ast-\beta a$ (the rate limit does not bind once the bias is
@@ -432,10 +501,10 @@ $L_{\mathrm{net}}=\tfrac{\pi(a^\ast)\mu}{3r}\,(1+o(1))$; we state this only
 as a first-order approximation, the exact figure being the finite sum
 above.
 
-\emph{Calibration.} A steady bias $\mu$ scales every floor on the pair by
-$1-\mu$, so any guarantee whose only calibration input is the public-floor
-spread $G=\max_iV_i/C_{S_i}$ becomes $G/(1-\mu)$; the coverage law
-recalibrates jointly,
+\emph{Feedback.} A steady bias $\mu$ scales every floor on the pair by
+$1-\mu$, so any guarantee whose benchmark input is the public-floor spread
+$G=\max_{i,S:\,C_S>0}V_i(S)/C_S$ becomes $G/(1-\mu)$; the coverage law transforms
+jointly,
 $(g,\alpha)\mapsto(g/(1-\mu),\min\{1,\alpha/(1-\mu)\})$. Structural
 production complementarity, directed-pair complexity, and produced-welfare
 PoA are unaffected.\hfill$\square$
@@ -445,7 +514,7 @@ PoA are unaffected.\hfill$\square$
 
 \begin{table}[h]
 \centering
-\caption{Deployment diagnostics used only for calibration. The visible
+\caption{Deployment diagnostics used only as motivation. The visible
 spread is auction-level and observable; it is not the structural
 complementarity factor $g$.}
 \label{tab:empirical}
@@ -464,3 +533,43 @@ Naive local reserve & 97.1\% vulnerable cell-windows in diagnostic\\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\paragraph{Sample and filters.}
+The trace contains 802,816 post-adoption solver competitions over an
+eight-month window. The parser retains protocol-valid, non-filtered,
+positive-score solver submissions. Full-sample quantities such as visible
+spread and effective solver count use all parsed auctions. USD-denominated
+quantities use smaller denominators because score conversion, notional
+coverage, and sanity filters are available only for subsets of the trace.
+These denominator changes are coverage restrictions, not inconsistencies.
+
+\paragraph{Score variables.}
+For each competition, $\mathrm{Score}_1$ is the winning solution score.
+The reference score $\mathrm{Score}^{\mathrm{other}}_2$ is the best
+positive score submitted by a solver different from the winner. The parser
+groups by solver identity, removes all candidate solutions submitted by
+the winning solver, and then takes the maximum remaining positive valid
+score; if none exists, the reference score is zero. This best-non-winning
+construction is solver-level: a winning solver's second candidate solution
+is not a credible outside option.
+
+\paragraph{Visible spread and accounting gap.}
+When the denominator is positive,
+$\widehat G^{\mathrm{obs}}=\mathrm{Score}_1/
+\mathrm{Score}^{\mathrm{other}}_2$, with infinite spread when the
+reference score is zero. The reported tail shares are computed on the full
+802,816-auction sample. The dollar gap converts
+$\mathrm{Score}_1-\mathrm{Score}^{\mathrm{other}}_2$ using ETH/USD prices,
+winsorizes the dollar gap at the first and ninety-ninth percentiles, and
+sums over the sanity-filtered denominator above. The \$54.69B covered
+notional is the sell-token notional over the same denominator.
+
+\paragraph{Reserve-vulnerability diagnostic.}
+The benchmark diagnostic uses cell-windows from the reserve-construction
+pipeline. With baseline quantile $\tau=0.25$, a cell-window is marked
+vulnerable if the maximum eligible-sample share of any single solver is at
+least $\tau$, meaning that a single solver could potentially influence the
+local reserve quantile if its samples were contaminated. In the diagnostic,
+97.1\% of auction-weighted cell-windows are vulnerable. The design
+implication is to inherit from parent cells or use audit-only/soft reserves
+when local support is sparse.

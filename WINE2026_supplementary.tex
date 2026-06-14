@@ -43,7 +43,7 @@ Visible accounting gap (relative) & $\approx 0.94$ bps \\
 \end{tabular}
 \caption{Scale of the deployment trace. The visible accounting gap is the
 aggregate difference between the winning solution's score and the best
-non-winning visible score on the sane-volume USD subsample.}
+non-winning visible score on the sanity-filtered USD subsample.}
 \end{table}
 
 \section*{S2. Visible coverage / spread distribution}
@@ -114,7 +114,8 @@ non-filtered, positive-score solver submissions. Full-sample quantities
 such as visible spread and effective solver count use all parsed auctions.
 USD-denominated quantities use smaller denominators: 680,839
 score-to-USD observations, 493,653 notional-covered observations, and
-318,469 sane-volume observations with $\mathrm{volume\_usd}\in[1,10^7]$.
+318,469 sanity-filtered observations with
+$\mathrm{volume\_usd}\in[1,10^7]$.
 These denominator changes are intentional coverage restrictions, not
 inconsistencies.
 
@@ -151,7 +152,7 @@ The score difference is converted to dollars using ETH/USD prices:
 \cdot \mathrm{ETHUSD}.
 \]
 The reported \$5.13M aggregate winsorizes this dollar gap at the first
-and ninety-ninth percentiles and sums over the sane-volume denominator
+and ninety-ninth percentiles and sums over the sanity-filtered denominator
 above. The \$54.69B covered notional is the sell-token notional over the
 same denominator, and the 0.94 bps figure is
 $10^4$ times aggregate gap divided by covered notional.

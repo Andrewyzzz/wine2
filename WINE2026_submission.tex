@@ -35,8 +35,9 @@ they have no numeraire: there is no common asset in which to redistribute
 the resulting surplus. The deployed fix builds an endogenous fairness
 benchmark from the bids and executes a batched bid only if it delivers to
 every covered trader at least that trader's standalone competitive
-outcome. We give a worst-case theory of this design around one invariant:
-the complementarity factor $g$, together with liquidity $\theta=1-\lambda$.
+outcome. We give a worst-case theory of this design using a common scale
+parameter: the complementarity factor $g$, together with liquidity
+$\theta=1-\lambda$.
 The model and fairness benchmark are due to Canidio and
 Henneke~\cite{canidio2024}; our contribution is the worst-case
 approximation, competitive, and incentive layer on top.
@@ -46,20 +47,20 @@ parameters and independent of the number of orders and of prices, with a
 dichotomy between $g$ (no numeraire) and $1$ (full numeraire); batch size
 is not the right parameter---the right refinement is a per-leg coverage
 floor $\alpha$, under which the exact law is
-$\min(g,\alpha+(1-\alpha)/\theta)$. A Walrasian/UDP equilibrium
-supporting an efficient allocation exists for every instance iff $g=1$,
-by native no-numeraire arguments, and at the trader-optimal equilibrium
-the price system is precisely the fairness benchmark. The price of
+$\min(g,\alpha+(1-\alpha)/\theta)$. Within the order-price abstraction of
+UDP, the rate-realizable floor-vector frontier for equilibrium support of
+efficient allocations is exactly $g=1$, by native no-numeraire arguments;
+at $g=1$ the price system is precisely the fairness benchmark. The price of
 strategyproofness is $\Theta(1+\log g)$ for a single multi-minded solver
 and for many single-minded solvers, via two posted-price mechanisms and a
-convex profit-curve technique; the remaining multi-agent multi-minded
-cell admits $O(N\log g)$ and has a serial-demand $\Omega(\min(N,g))$
-barrier. Online, the price splits: against realized
+convex profit-curve technique. The remaining multi-agent multi-minded
+cell is a partial frontier: it admits $O(N\log g)$ and has a serial-demand
+$\Omega(\min(N,g))$ barrier. Online, the price splits: against realized
 lifetime floors even randomization pays exactly $g$, while with static
 public floors the residual problem is one-way search over the spread,
 deterministic $\Theta(\sqrt g)$ and randomized $\Theta(\log g)$.
-Throughout, one scale-free family governs both the informational and the
-incentive price of the spread $g$.
+Across these results, the same scale-free parameter $g$ recurs in both
+the informational and the incentive price of the spread.
 \keywords{Combinatorial auctions \and Price of fairness \and
 Mechanism design \and Blockchain \and Competitive analysis.}
 \end{abstract}
@@ -72,9 +73,10 @@ called \emph{solvers}; the protocol collects intents off-chain and
 auctions them in batches, in the spirit of frequent-batch market
 design~\cite{budish2015}. These markets are economically significant---
 recent figures put monthly volume on the order of billions of
-dollars\footnote{Order-of-magnitude figure from the deployment
-literature on the studied protocol; precise deployment identifiers are
-omitted for anonymity.}---and they are \emph{combinatorial}:
+dollars\footnote{Order-of-magnitude figure from the anonymized deployment
+diagnostics in Appendix~\ref{app:empirical}; precise deployment
+identifiers are omitted for anonymity.}---and
+they are \emph{combinatorial}:
 a solver executing several intents together can net opposing flows and
 save on fees, producing more value than executing them separately; this
 batching logic is central in MEV-aware market design
@@ -84,8 +86,8 @@ absence of a \emph{numeraire}. Users may demand any asset for any other,
 there is no common unit of account, and assets are illiquid, so the
 extra value created by batching cannot simply be paid out and shared.
 
-The deployed response (the \emph{fair combinatorial auction}, adopted by
-the studied protocol) constructs a fairness benchmark \emph{from the
+A deployed intent-auction protocol uses the \emph{fair combinatorial
+auction}: it constructs a fairness benchmark \emph{from the
 bids themselves}: each trader's standalone competitive outcome defines a
 floor, and a batched bid is executed only if it delivers at least that
 floor to \emph{every} covered trader. This sidesteps the impossibility
@@ -99,8 +101,8 @@ welfare does the fairness filter cost, when do competitive equilibria
 exist, what does strategyproofness cost, and how do these prices behave
 online and under manipulation.
 
-\paragraph{One invariant.}
-We organize such a theory around a single structural quantity. For a
+\paragraph{A common scale.}
+We organize such a theory around a recurring structural quantity. For a
 solver with batch value $V_i(S)$ on a set $S$ of intents and standalone
 values $V_i(\{j\})$, the \emph{complementarity factor} is the least
 $g\ge1$ with $V_i(S)\le g\sum_{j\in S}V_i(\{j\})$ for all $i,S$: how much
@@ -109,9 +111,9 @@ of order $j$ is $c_j=\max_i V_i(\{j\})$, and liquidity is
 $\theta=1-\lambda\in[0,1]$, where $\lambda$ is the haircut on moving
 value across assets ($\theta=0$ is the pure no-numeraire regime,
 $\theta=1$ restores a numeraire). We show that $g$---together with
-$\theta$---controls a remarkably wide range of worst-case quantities,
-which is what gives the design a unified analysis rather than a
-collection of unrelated bounds.
+$\theta$---is the natural scale in a wide range of worst-case quantities,
+which gives the design a unified analysis rather than a collection of
+unrelated bounds.
 
 The role of $g$ is deliberately worst-case: the theorems do not require a
 deployment to estimate the structural complementarity of every batch.
@@ -119,60 +121,49 @@ The empirical section only shows that the corresponding observable
 spreads and supports are real in deployment.
 
 \paragraph{Contributions.}
-We ask what price three design requirements carry, each answered in terms
-of the same $g$ (with liquidity $\theta$). The main results are
-Theorems~\ref{thm:pof}--\ref{prop:walras}; the same spread parameter then
-governs incentives, online behavior, and benchmark manipulation.
+We ask what price several design requirements carry, each in terms of $g$
+(and liquidity $\theta$). Each item below leads with tight
+characterizations (exact or asymptotically tight); partial frontiers and
+peripheral extensions are marked as such.
 \begin{enumerate}[leftmargin=*,itemsep=2pt]
 \item \textbf{Price of fairness (Section~\ref{sec:pof}).} The welfare
-ratio between the unconstrained optimum and the best fair outcome is
-exactly $\min(g,1/\theta)$, tight and independent of order count and of
-prices, with the no-numeraire/numeraire dichotomy $\{g,1\}$. The binding
-instance is an asymmetry at the repair/drop indifference point; batch
-size is not the parameter, and under a
-per-leg coverage floor $\alpha$ the law is
-$\min(g,\alpha+(1-\alpha)/\theta)$.
+ratio between the unconstrained optimum and best fair outcome is exactly
+$\min(g,1/\theta)$, tight and order/price-independent, with endpoints
+$\{g,1\}$; under coverage floor $\alpha$ the exact law is
+$\min(g,\alpha+(1-\alpha)/\theta)$. The binding instance is an asymmetry
+at the repair/drop indifference point, not maximal complementarity.
 
 \item \textbf{Equilibrium existence and the core
 (Section~\ref{sec:walras}).} A Walrasian/UDP equilibrium supporting an
-efficient allocation exists for every instance iff $g=1$, both directions
-proved natively; at the trader-optimal equilibrium the obligations are
-exactly the fairness floors. The deployed filter is precisely the
-singleton-coalition core constraint, the individual allocation always
-lies in the multiplicative $g$-core (tight), and the no-numeraire core can
-be nonempty even when the transferable core is empty.
+efficient allocation exists for every rate-realizable floor-vector
+instance iff $g=1$, with obligations equal to the fairness floors. The
+deployed filter is the singleton-core constraint, the individual allocation
+lies in the tight $g$-core, and the no-numeraire core can be nonempty when
+the transferable core is empty.
 
 \item \textbf{Price of strategyproofness (Section~\ref{sec:incentives}).}
-Two impossibilities pin down the regime: best-bid fairness conflicts with
-dominant-strategy truthfulness already on a single order, collapsing the
-enforceable benchmark to the runner-up level
-(Theorem~\ref{thm:incompat}), and online realized-floor manipulation
-forces ratio $g$ even with randomization. Both make the endogenous
-benchmark strategically self-referential, so the minimal relaxation is a
-public, $g$-calibrated historical floor. In that exogenous-benchmark
-regime the price of strategyproofness is $\Theta(1+\log g)$---for many
-single-minded solvers and for one multi-minded solver---via an
-eligibility-posted packing mechanism and a coupled-menu mechanism with a
-convex profit-curve argument; independent option pricing pays
-$\Omega(g/\log^2 g)$, and the multi-agent multi-minded cell is pinned
-between $O(N\log g)$ and an $\Omega(\min(N,g))$ barrier.
+Endogenous best-bid fairness conflicts with DSIC already on one order,
+and online realized floors force ratio $g$ even randomized. In the public
+historical-floor regime, strategyproofness costs $\Theta(1+\log g)$ for
+many single-minded solvers and for one multi-minded solver. As further
+separations, independent geometric option pricing admits an
+$\Omega(g/\log^2 g)$ loss, and the multi-agent multi-minded cell remains a
+partial frontier: it has an $O(N\log g)$ mechanism and a serial
+$\Omega(\min(N,g))$ barrier.
 
 \item \textbf{Online and strategic prices (Section~\ref{sec:online}).}
-Deterministic online fair settlement has competitive ratio exactly $g$;
-randomization does not help against realized lifetime floors, but with
-static public floors the residual problem is one-way search,
-deterministic $\Theta(\sqrt g)$ and randomized $\Theta(\log g)$. The
-first-price game's individual restriction is smooth (coarse-correlated
-price of anarchy $\le e/(e-1)$), and a contamination game prices
-benchmark manipulation with a sharp participation threshold and a
-rate-limit ramp tax.
+Online fair settlement pays exactly $g$ against realized floors; with
+static public floors the residual one-way search problem is deterministic
+$\Theta(\sqrt g)$ and randomized $\Theta(\log g)$. The individual
+first-price restriction is smooth but leaves a latent-batch obstruction
+for the full game; Appendix~\ref{app:manipulation} records a complete but
+peripheral benchmark-manipulation extension with feedback
+$g\mapsto g/(1-\mu)$.
 \end{enumerate}
 
-Fair winner determination is NP-hard but fixed-parameter tractable in the
-number of directed asset pairs. Section~\ref{sec:empirics} calibrates
-observable deployment diagnostics; the worst-case theory is independent
-of those measurements.
-Table~\ref{tab:summary} collects the quantitative results.
+Fair winner determination is NP-hard but FPT in directed pairs.
+Section~\ref{sec:empirics} reports diagnostics; the worst-case theory is
+independent of them. Table~\ref{tab:summary} collects the results.
 
 \begin{table}[t]
 \centering
@@ -192,16 +183,16 @@ Quantity & Result & Status\\
 \midrule
 Price of fairness & $\min(g,1/\theta)$; endpoints $\{g,1\}$ & exact\\
 \quad coverage refinement & $\min(g,\alpha+(1-\alpha)/\theta)$; size-irrelevant & exact\\
-Walrasian/UDP existence & for all instances iff $g=1$ & exact\\
+Walrasian/UDP existence & rate-realizable class: iff $g=1$ & exact\\
 Core & filter $=$ singleton-core; $g$-core nonempty, tight & exact\\
-Winner determination & NP-hard; FPT in directed pairs $P$ & ---\\
-Strategyproofness (screening) & $\Theta(1+\log g)$; det.\ exactly $\sqrt g$ & asympt.\ tight\\
-\quad single-/multi-minded & both $\Theta(1+\log g)$; indep.\ $\Omega(g/\log^2 g)$ & asympt.\ tight\\
+Winner determination & NP-hard; FPT by directed-pair count & complexity classification\\
+Strategyproofness (screening) & rand.\ $\Theta(1+\log g)$; det.\ exact $\sqrt g$ & tight/asympt.\ tight\\
+\quad single-/multi-minded & both $\Theta(1+\log g)$; indep.\ geometric: $\Omega(g/\log^2 g)$ loss & asympt.\ tight / separation\\
 \quad multi-agent multi-minded & $O(N\log g)$ / serial $\Omega(\min(N,g))$ & partial (serial barrier)\\
 Online (realized floors) & exactly $g$, even randomized & exact\\
 Online (static floors) & det.\ $\Theta(\sqrt g)$, rand.\ $\Theta(\log g)$ & asympt.\ tight\\
 Price of anarchy & individual-only $\le e/(e-1)$; full conj.\ $\Theta(g)$ & partial (latent batches)\\
-Contamination & threshold $\kappa_1\ge v\beta$ deters; $g\mapsto g/(1-\mu)$ & ---\\
+Contamination & threshold $\kappa_1\ge v\beta$ deters; $g\mapsto g/(1-\mu)$ & App.~\ref{app:manipulation}\\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -234,22 +225,18 @@ provide related strategic context~\cite{ma2025}.
 
 There are $n$ trade intents (\emph{orders}) and a set of \emph{solvers}.
 A solver $i$ submitting a batched bid on a set $S$ specifies, for each
-$j\in S$, a \emph{delivered score} $y_{i,S,j}\ge0$ in $j$'s requested
-asset (trader-normalized units); the batch value is
+$j\in S$, a \emph{raw output} $y_{i,S,j}\ge0$ in $j$'s requested asset
+(trader-normalized units), before any within-batch rebalancing; the batch
+value is
 $V_i(S)=\sum_{j\in S}y_{i,S,j}$, realized only if the batch executes.
-Delivery is batch-specific: the same solver may achieve different
-delivered scores for order $j$ in different batches (joint execution nets
-flows and saves fees), so $V_i(S)$ is \emph{not} additive across orders
-in general. The standalone value is $V_i(\{j\})=y_{i,\{j\},j}$, and the
-complementarity factor (Definition~\ref{def:g}) measures exactly how far
-batching lifts value above the sum of standalones. A winning bid delivers
-$w_j\le y_{i,S,j}$ to each covered order; the solver's profit is
-$V_i(S)-\sum_{j\in S}w_j$, kept in produced assets, not transferred
-across traders. The floor is $c_j=\max_i V_i(\{j\})$. Reports are
-\emph{binding}: a solver cannot claim value it cannot deliver, so the
-strategic misreports relevant for our posted models are downward. Welfare
-$W=\sum_j w_j$ is an additive social objective over trader-normalized
-delivered scores, not a transferable monetary surplus.
+Delivery is batch-specific: the same solver may have different raw outputs
+for order $j$ in different batches, so $V_i(S)$ is not additive in
+general. The standalone value is $V_i(\{j\})=y_{i,\{j\},j}$, and the
+floor is $c_j=\max_iV_i(\{j\})$. Reports are \emph{binding}: a solver
+cannot claim raw output or delivered value it cannot produce, so relevant
+misreports are downward. Welfare $W=\sum_jw_j$ is an additive social
+objective over trader-normalized delivered scores, not a transferable
+monetary surplus.
 
 \begin{definition}[Complementarity factor]\label{def:g}
 The instance has complementarity factor $g\ge1$ if
@@ -270,37 +257,56 @@ welfare is $W=\sum_j w_j$. Let $\OPT$ be the maximum welfare ignoring
 fairness and $\FAIR$ the maximum over fair allocations; the \emph{price
 of fairness} is $\PoF:=\sup\OPT/\FAIR$ over a stated class.
 
-\begin{definition}[Liquidity]\label{def:theta}
+\begin{definition}[Liquidity and feasible delivery]\label{def:theta}
 Within a single winning bid a solver may convert value across its traders
-at haircut $\lambda\in[0,1]$: withdrawing $x$ from one trader's asset
-yields $(1-\lambda)x$ for another. Write $\theta:=1-\lambda$ for
-\emph{liquidity}; $\theta=0$ is the pure no-numeraire case, $\theta=1$ a
-full numeraire. Conversion is per-bid.
+at haircut $\lambda\in[0,1]$. Write $\theta:=1-\lambda$ for
+\emph{liquidity}: moving one unit out of one trader's asset yields
+$\theta$ units in another. For delivered vector $w$, let
+$D^+=\sum_{w_j>y_{i,S,j}}(w_j-y_{i,S,j})$ and
+$D^-=\sum_{w_j<y_{i,S,j}}(y_{i,S,j}-w_j)$; delivery is feasible iff
+$D^+\le\theta D^-$.
+Thus a starved leg may receive $w_j>y_{i,S,j}$, funded by over-served legs;
+$\theta=1$ is value-preserving and $\theta=0$ forbids cross-trader repair.
+Conversion is per-bid.
 \end{definition}
 
-Per-bid conversion models a solver rebalancing net flows \emph{within} a
-single settlement (its own routing), not across settlements or traders;
-this is a stylized but conservative abstraction of deployed solver
-behavior.
+This per-bid model excludes cross-settlement inventory; richer liquidity
+only eases repair, so $\min(g,1/\theta)$ is a worst-case ceiling.
 
 The deployed mechanism additionally requires uniform clearing prices per
 directed token pair (\emph{uniform directed prices}, UDP), forcing all
-orders on one directed pair into a single winning bid. UDP is vacuous in
-Sections~\ref{sec:pof}--\ref{sec:incentives} (our constructions use
-distinct pairs) and reappears as the source of fixed-parameter
-tractability. This is the order-level analogue of the uniform clearing
+orders on one directed pair into a single winning bid. UDP is vacuous for
+the constructions in Section~\ref{sec:pof}, which use distinct pairs.
+Sections~\ref{sec:incentives}--\ref{sec:online} study public-benchmark
+screening and online abstractions without imposing UDP. Section~\ref{sec:walras}
+uses UDP as its obligation abstraction, and UDP later reappears as the
+source of fixed-parameter tractability. This is the order-level analogue of the uniform clearing
 price in frequent batch auctions~\cite{budish2015}, specialized to the
 trade-intent model of Canidio and Henneke~\cite{canidio2024}. Full
 proofs of all numbered results are in the appendix.
 
-\paragraph{Running example.}
-The basic tension already appears with two orders. Suppose order $2$ has
-floor $c$ and order $1$ has essentially no standalone floor, while a
-batch creates total value $\gamma c$ mostly on order $1$. Fairness forces
-the batch either to transfer value across assets to repair order $2$, or
-to drop the batch and settle floors. This repair/drop tradeoff is the
-geometry behind Theorem~\ref{thm:pof}; the sharp loss occurs when
-$\gamma=\min(g,1/\theta)$.
+\paragraph{Regime map.}
+\vspace{-0.5em}
+\begin{center}
+\scriptsize
+\renewcommand{\arraystretch}{0.82}
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{@{}p{0.22\textwidth}p{0.23\textwidth}p{0.12\textwidth}p{0.07\textwidth}p{0.25\textwidth}@{}}
+\toprule
+Result & Floors & Repair & UDP & Solvers\\
+\midrule
+Thms.~\ref{thm:pof}--\ref{thm:coverage} & standalone/given & yes, $\theta$ & no & any\\
+Thm.~\ref{prop:walras} & endogenous & no & yes & many\\
+Thm.~\ref{thm:incompat} & current-report & no & no & many\\
+Thms.~\ref{thm:posp}--\ref{thm:lift} & public/historical & no & no & screening; 1 multi; many single\\
+Thm.~\ref{thm:multi} & public/historical & no & no & $N$ multi\\
+Prop.~\ref{prop:online}--Thm.~\ref{thm:online} & realized/static & no & no & online\\
+Thm.~\ref{thm:poa} & given & no & no & many\\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{-0.7em}
+Except in §3, repair is not part of feasible deviations.
 
 \section{The Price of Fairness}\label{sec:pof}
 
@@ -321,11 +327,14 @@ tight, and independent of the number of orders and of prices
 
 \begin{proof}[Proof idea]
 \emph{Upper bound.} Process each bid of an unconstrained optimum
-independently. A bid with gain $\gamma=V/C_S\in[1,g]$ has deficit
-$D=\sum_{j\in S}(c_j-y_{i,S,j})^+\le C_S$. Either drop the batch and settle
-floors, delivering $C_S=V/\gamma$, or repair starved legs using the
-batch's own surplus. Clearing $D$ loses $D(1-\theta)/\theta$, so whenever
-repair is feasible,
+independently. For a locally undominated OPT bid, replacing it by
+singleton floor allocations would not improve welfare, so
+$\gamma=V/C_S\ge1$; Definition~\ref{def:g} gives $\gamma\le g$. Its
+deficit is $D=\sum_{j\in S}(c_j-y_{i,S,j})^+\le C_S$. Either drop the batch and settle
+floors, delivering $C_S=V/\gamma$, or repair starved legs by a feasible
+delivery that saturates the conversion budget of
+Definition~\ref{def:theta}. Clearing $D$ loses $D(1-\theta)/\theta$, so
+whenever repair is feasible,
 \[
   \frac{V-D(1-\theta)/\theta}{V}
   \ge 1-\frac{1-\theta}{\theta\gamma}
@@ -391,6 +400,11 @@ This is not a restatement of the gross-substitutes existence theory:
 gross substitutes support Walrasian equilibria with prices and transfers
 over items~\cite{kelso1982,gul1999}, whereas our frontier is about
 componentwise obligations in traders' requested assets.
+Throughout this section, equilibrium feasibility is the native UDP
+obligation model: an executable deviation must meet each obligation
+componentwise, equivalently $\theta=0$ for deviations. The liquidity repair
+operator of Definition~\ref{def:theta} is used for the price-of-fairness
+comparison, not for defining executable UDP deviations.
 
 We work in the order-price abstraction of UDP: a directed-rate system
 induces order-level obligations $w_j\ge0$ that any solver serving $j$
@@ -431,12 +445,12 @@ high for incentive compatibility, and the cycle leaves no price vector
 that satisfies all three demands.
 
 \begin{theorem}[Existence frontier is $g=1$]\label{prop:walras}
-A UDP equilibrium supporting an efficient allocation exists for
-\emph{every} instance of the class with complementarity at most $g$
-\emph{iff} $g=1$. For $g=1$ the obligations $w_j=c_j$ are an equilibrium,
-so the equilibrium is best-bid fair; for every $g>1$ some instance admits
-none. (Solvers have no capacity constraints; in $(a)$ the floor vector is
-assumed rate-realizable.)
+Within the order-price abstraction of UDP, restricted to instances whose
+floor vector $c$ is rate-realizable, a UDP equilibrium supporting an
+efficient allocation exists for every instance with complementarity at
+most $g$ iff $g=1$. For $g=1$, the obligations $w_j=c_j$ form a
+best-bid-fair equilibrium. For every $g>1$, some rate-realizable instance
+admits no such equilibrium. Solvers have no capacity constraints.
 \end{theorem}
 
 \begin{proof}[Proof idea]
@@ -448,10 +462,14 @@ $C=\OPT$, and the price vector coincides with the fairness benchmark.
 does not imply it here, since feasibility only \emph{removes}
 deviations. The hard instance is a three-cycle of overlapping
 pair-batches with vector $(1+\tfrac\delta2,1+\tfrac\delta2)$ over floors
-$1$. Supporting one efficient pair forces an obligation on the third
-order low enough to keep that pair feasible; the two alternative pairs
-then impose deviation inequalities that sum to $\delta\le0$, contradicting
-any positive complementarity. Full details are in Appendix B.\hfill$\square$
+$1$. The three orders lie on distinct directed pairs, so the unit floor
+vector is rate-realizable. Supporting one efficient pair forces an
+obligation on the third order low enough to keep that pair feasible. The
+adjacent unchosen pair is
+then both executable and must be unprofitable; splitting on whether the
+shared obligation is above or below its singleton floor yields either
+$\delta\le0$ or a componentwise-feasibility contradiction. Full details are
+in Appendix B.\hfill$\square$
 \end{proof}
 
 The filter also has a cooperative reading. A bid \emph{blocks} an
@@ -491,8 +509,8 @@ the $P$ atoms. Dynamic programming over pair masks
 (or equivalently weighted set packing on $P$ items) tries
 $2^P$ states and scans the bid list in each state, giving
 $2^{O(P)}\cdot\mathrm{poly}(|\mathcal B|)$.
-The deployment cap on pairs per batch thus makes the problem tractable in
-exactly the deployed regime. This is another way in which $g$ and the
+A deployment cap on pairs per batch thus makes the problem tractable in
+the intended regime. This is another way in which $g$ and the
 token-pair graph play complementary roles: $g$ controls the loss from
 fairness and incentives, while $P$ controls the search space left by the
 uniform-price constraint.
@@ -513,11 +531,12 @@ misreports are infeasible by settlement, and ``universal truthfulness''
 refers to posted-demand mechanisms whose menu is independent of the
 solver's behavior.
 
-Two impossibilities pin down the regime. First, with \emph{endogenous}
-floors---computed from the current reports---VCG-style compensation is
-infeasible because the no-numeraire constraint gives no asset in which to
-make the Clarke payment. More sharply, best-bid fairness and dominant
-strategy truthfulness already conflict on one order:
+There are three benchmark regimes. First, \emph{current-report} floors are
+the original endogenous ideal, but they are self-referential:
+VCG-style compensation is infeasible because the no-numeraire constraint
+gives no asset in which to make the Clarke payment. More sharply,
+best-bid fairness and dominant-strategy truthfulness already conflict on
+one order:
 
 \begin{theorem}[Best-bid fairness is incompatible with strategyproofness]
 \label{thm:incompat}
@@ -530,29 +549,20 @@ one order. Under DSIC, the enforceable benchmark collapses to the
 runner-up level.
 \end{theorem}
 
-Second, as Section~\ref{sec:online} proves, online with realized lifetime
-floors admits no fair mechanism better than ratio $g$, even randomized:
-a solver settling a batch can be undercut by a later standalone bid that
-raises a covered order's own floor. Both failures trace to the same
-source---when the floor responds to current behavior, a solver can
-manipulate its own benchmark---so the natural and \emph{deployed}
-response is to fix floors from a public, $g$-calibrated historical
-window, severing that channel while preserving the spread $g$ as the
-operative parameter. We therefore analyze this
-exogenous-benchmark regime; the price of strategyproofness $\mathrm{PoSP}$
-is the welfare ratio between $\FAIR$ and the best universally truthful
-fair mechanism, and solvers are single- or multi-minded with private
-values passing the filter. The endogenous results above show this is a
-relaxation forced by impossibility, not a convenience: under endogenous
+Second, \emph{realized lifetime} floors are operationally stronger, but
+as Section~\ref{sec:online} proves, online fairness then admits no ratio
+better than $g$ even with randomization: a solver settling a batch can be
+undercut by a later standalone bid that raises a covered order's own
+floor. Third, \emph{public delayed or historical} floors sever this
+self-reference while preserving the spread $g$ as the operative parameter.
+This is the deployed-safe regime, not a hypothetical substitute: a
+deployment-safe benchmark is already a public historical window. We therefore
+analyze this exogenous-benchmark regime; the price of strategyproofness
+$\mathrm{PoSP}$ is the welfare ratio between $\FAIR$ and the best
+universally truthful fair mechanism, and solvers are single- or
+multi-minded with private values passing the filter. Under endogenous
 floors the relevant question is not the price of strategyproofness but its
 non-existence.
-
-This reduction is important for interpretation. The public-floor model is
-not a stronger assumption smuggled in to obtain mechanisms; it is the
-minimal relaxation left after the endogenous benchmark has been shown to
-be strategically self-referential. The theorem below therefore measures
-the residual cost of truthfulness once that self-reference has been
-severed.
 
 The canonical screening family of the regime is already nontrivial for
 one strategic solver:
@@ -580,16 +590,25 @@ Random geometric posted levels give the matching upper bound up to
 constants. Two mechanisms lift the guarantee to the full game.
 
 \paragraph{Mechanism model.}
-In the exogenous-benchmark regime the floors $c_j$ are public. A
-solver's feasible options and their floor masses $C_S=\sum_{j\in S}c_j$
-are public; only its values $V_S$ are private. The mechanisms below are
-posted: prices and eligibility depend only on public data and a public
-random seed, and each solver responds by demanding a disjoint collection
-of options rather than reporting values. The mechanism honors demand only
-when the solver delivers the floors to every covered order. Universal
-truthfulness is in this posted-demand sense: for every seed, demanding a
+In the exogenous-benchmark regime the floors $c_j$ are public. The public
+geometry consists of feasible option sets $S$ and their floor masses
+$C_S=\sum_{j\in S}c_j$. A solver's private type specifies, for each
+option $S$, an executable filter-passing production vector
+$y_{S,j}\ge c_j$; we summarize it by the scalar value
+$V_S=\sum_{j\in S}y_{S,j}\in[C_S,gC_S]$. Any total delivery
+$D\in[C_S,V_S]$ can clear all floors componentwise by scaling surplus:
+deliver $w_j=c_j+\alpha(y_{S,j}-c_j)$ for
+$\alpha=(D-C_S)/(V_S-C_S)$ (with the obvious convention when
+$V_S=C_S$). The mechanisms below post only as a function of public
+$C_S$ and a public random seed, and each solver responds by demanding a
+disjoint collection of options rather than reporting values. Settlement
+verifies the promised componentwise delivery. Universal truthfulness is
+in this posted-demand sense: for every seed, demanding a
 utility-maximizing executable collection is dominant because the menu is
 independent of that solver's behavior.
+The posted quantity $C_St$ is not a monetary payment; it is a required
+delivered-score threshold for option $S$, in the covered orders' requested
+assets. The profit $V_S-C_St$ is retained raw value, not cash.
 
 \begin{theorem}[Two routes to $\Theta(1+\log g)$]\label{thm:lift}
 (i) For arbitrarily many single-minded solvers with public floors, an
@@ -598,16 +617,16 @@ $\Theta(1+\log g)$-competitive. (ii) For one multi-minded solver of
 arbitrary structure, a coupled-menu mechanism---post all options at
 prices $C_S\,t$ for a single random multiplier $t=e^k$ and let the solver
 demand any profit-maximizing disjoint collection---is universally
-truthful and $\Theta(1+\log g)$-competitive. Independent per-option
-pricing instead pays $\Omega(g/\log^2 g)$.
+truthful and $\Theta(1+\log g)$-competitive. The natural independent
+geometric per-option analogue can instead pay $\Omega(g/\log^2 g)$.
 \end{theorem}
 
 The multi-minded bound rests on a \emph{profit-curve} technique: the
 solver's profit $p(t)$ over disjoint collections is convex and piecewise
 linear, delivered mass is $t\,(-p'(t))$, and a geometric grid telescopes
 $p(1)$ against expected welfare. The single random multiplier is
-essential: independently pricing options lets a multi-minded solver take
-only the cheapest member of a family of substitutes, losing the
+essential: the independent geometric analogue lets a multi-minded solver
+take only the cheapest member of a family of substitutes, losing the
 collection value that fairness must compare against. The remaining cell
 is both multi-agent and multi-minded:
 
@@ -682,59 +701,57 @@ batches that execute only under a deviation.
 \end{theorem}
 
 \paragraph{Benchmark robustness.}
-On one directed pair, let an attacker of volume $v$ depress a quantile
-benchmark by injecting mass $a$ at convex cost
-$K(a)=\kappa_1a+\tfrac{\kappa_2}2a^2$, with local sensitivity $\beta$.
-\begin{theorem}[The contamination game]\label{thm:contam}
-A marginal injection cost $\kappa_1\ge v\beta$ deters contamination.
-Otherwise the optimal steady attack is
-$a^\ast=\min\{\bar a,(v\beta-\kappa_1)/\kappa_2\}$, inducing relative
-bias $\mu=\beta a^\ast/b^\ast$; bursts do not beat the constant attack,
-and rate limits tax restarts through a finite ramp without changing the
-steady state. Every floor-calibrated guarantee is then read with
-$g\mapsto g/(1-\mu)$.
-\end{theorem}
-Fees deter, detection tempers, and rate limits tax ramping; persistent
-bias is removed only by a sufficient cost floor.
+Benchmark manipulation is itself a priced game: a sufficient injection-cost
+floor deters it, and steady contamination feeds back as
+$g\mapsto g/(1-\mu)$, closing the loop with every floor-calibrated bound
+(Appendix~\ref{app:manipulation}).
 
-\section{Empirical Calibration}\label{sec:empirics}
+\section{Deployment Diagnostics (Motivation)}\label{sec:empirics}
 
-An anonymized supplementary deployment trace contains 802,816
-post-adoption solver competitions over eight months. On the sane-volume
-USD subsample, the trace reports \$54.69B of covered notional and a
-\$5.13M visible accounting gap, about 0.94 bps. The visible spread is
-nontrivial in the tail: $\widehat G^{\mathrm{obs}}>2$ in 25.3\% of
-auctions, $\widehat G^{\mathrm{obs}}>4$ in 20.2\%, and
-$\widehat G^{\mathrm{obs}}>2$ in 63.1\% of small-notional auctions. The
-supplement defines the score variables, filters, and replay diagnostics.
-The point is not to estimate structural $g$. The bounds are design
-guardrails: they say what happens if flow drifts toward high-complementarity
-or thin-liquidity assets, exactly where the small-notional tail is
-largest. They also remain relevant under manipulation, since benchmark
-contamination feeds back as $g\mapsto g/(1-\mu)$.
-The same trace makes $P$ observable and motivates benchmark robustness:
-under a naive local hard-reserve benchmark, 97.1\% of auction-weighted
-cell-windows are vulnerable, a design signal for inherited,
-quantile-based, delayed, and rate-limited benchmarks.
-
-\textbf{These are observable deployment diagnostics, not estimates of
-the structural complementarity factor $g$; the theory's worst-case
-bounds hold for whatever $g$ a deployment exhibits.}
+An anonymized trace from a deployed intent-auction system contains 802,816 post-adoption solver
+competitions over eight months. On the sanity-filtered USD subsample it
+reports \$54.69B covered notional and a \$5.13M visible accounting gap
+(0.94 bps). The visible spread is nontrivial in the tail:
+for all auctions, $\widehat G^{\mathrm{obs}}>2$ in 25.3\% and
+$\widehat G^{\mathrm{obs}}>4$ in 20.2\%; for small-notional auctions,
+$\widehat G^{\mathrm{obs}}>2$ in 63.1\%. The
+appendix defines the score variables, filters, and replay diagnostics.
+When the denominator is positive, the parser computes
+$\widehat G^{\mathrm{obs}}_a=Score_{1,a}/Score^{\mathrm{other}}_{2,a}$,
+where $Score^{\mathrm{other}}_{2,a}$ is the best positive valid score
+after removing the winning solver, not a singleton floor mass. Thus the
+spread is not an estimate of $g$, but it gives a conditional lower
+envelope. Let $S_a$ be the winning batch and
+$C_a=\sum_{j\in S_a}c_j$ its floor mass. If
+$Score^{\mathrm{other}}_{2,a}=\eta_a C_a$, then
+$\eta_a\widehat G^{\mathrm{obs}}_a=Score_{1,a}/C_a\le g_a$, because
+$Score_{1,a}\le V_{\mathrm{win}}(S_a)\le
+g_a\sum_{j\in S_a}V_{\mathrm{win}}(\{j\})\le g_aC_a$.
+The trace does not observe $C_a$, so $\eta_a$ is an auxiliary-audit
+ratio; without certifying $\eta_a\ge1$ we do not read
+$\widehat G^{\mathrm{obs}}$ as an unconditional lower bound on $g$.
+These diagnostics motivate the parameter regime; they neither estimate
+structural $g$ nor test point predictions. The bounds are tight as
+worst-case functions of $g$ and hold for whatever $g$ a deployment
+exhibits. The trace also records $P$ and a reserve diagnostic: 97.1\% of
+auction-weighted cell-windows are vulnerable under a naive local hard
+reserve, motivating inherited, quantile-based, delayed, and rate-limited
+benchmarks.
 
 \section{Conclusion}\label{sec:conclusion}
 
-A single invariant---the complementarity factor $g$, with liquidity
-$\theta$---governs the worst-case fairness, equilibrium, complexity,
-incentive, online, and manipulation prices of the no-numeraire fair
-combinatorial auction. Two phenomena recur: no-numeraire feasibility
+A recurring scale---the complementarity factor $g$, with liquidity
+$\theta$---organizes the worst-case fairness, equilibrium, complexity,
+incentive, and online prices of the no-numeraire fair combinatorial
+auction. Two phenomena recur: no-numeraire feasibility
 removes some deviations while disabling transfers, and one geometric
 family prices both informational and incentive costs of the spread.
 
-Two obstructions remain deliberately visible. The \emph{latent-batch}
-obstruction blocks full-game smoothness because deviations can activate
-batches absent under the original profile. The \emph{serial-demand
-barrier} shows that report-independent service orders can lose
-$\Omega(\min(N,g))$. Removing either seems to require a new idea.
+Three questions remain open, each with an identified obstruction:
+full-game price of anarchy (conjectured $\Theta(g)$; the latent-batch
+obstruction), polylogarithmic mechanisms for multi-agent multi-minded
+solvers without $N$ dependence (the serial-demand barrier), and nonemptiness of the
+$\theta=0$ core (Scarf balancedness, broken by overlap).
 
 \bibliographystyle{splncs04}
 \bibliography{refs}
